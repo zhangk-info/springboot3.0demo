@@ -15,9 +15,9 @@
     <artifactId>silver-admin</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>silver-system</module>
-        <module>silver</module>
-        <module>silver-common</module>
+        <module>system</module>
+        <module>business</module>
+        <module>common</module>
     </modules>
     <packaging>pom</packaging>
 
