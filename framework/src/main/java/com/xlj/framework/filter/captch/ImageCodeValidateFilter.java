@@ -1,8 +1,7 @@
 package com.xlj.framework.filter.captch;
 
 import cn.hutool.core.util.StrUtil;
-import com.xlj.system.service.SysLoginService;
-import jakarta.annotation.Resource;
+import com.xlj.framework.captch.CaptchService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +25,7 @@ import java.io.IOException;
 public class ImageCodeValidateFilter extends OncePerRequestFilter {
 
     @Autowired
-    private SysLoginService sysLoginService;
+    private CaptchService captchService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -36,10 +35,11 @@ public class ImageCodeValidateFilter extends OncePerRequestFilter {
             String signature = request.getParameter("signature");
             String username = request.getParameter("username");
             if (StrUtil.isNotEmpty(code)) {
-                sysLoginService.validateCaptcha(username, code, signature);
+                captchService.validateCaptcha(username, code, signature);
             }
         }
         filterChain.doFilter(request, response);
     }
+
 
 }

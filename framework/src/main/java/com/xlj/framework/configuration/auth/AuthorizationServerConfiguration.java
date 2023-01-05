@@ -12,7 +12,6 @@ import com.xlj.framework.configuration.auth.customizer.jwt.impl.JwtCustomizerImp
 import com.xlj.framework.configuration.auth.customizer.token.claims.OAuth2TokenClaimsCustomizer;
 import com.xlj.framework.configuration.auth.customizer.token.claims.impl.OAuth2TokenClaimsCustomizerImpl;
 import com.xlj.framework.configuration.auth.exception.CustomAuthenticationFailureHandler;
-import com.xlj.framework.configuration.auth.federated.identity.FederatedIdentityConfigurer;
 import com.xlj.framework.configuration.auth.handler.LogoutSuccessHandlerImpl;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;

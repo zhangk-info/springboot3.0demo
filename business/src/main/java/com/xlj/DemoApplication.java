@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author zhangkun
  */
 @SpringBootApplication
-public class SilverApplication {
+public class DemoApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SilverApplication.class, args);
+        SpringApplication.run(DemoApplication.class, args);
     }
 }

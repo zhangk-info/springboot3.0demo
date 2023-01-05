@@ -18,6 +18,7 @@
         <module>system</module>
         <module>business</module>
         <module>common</module>
+        <module>framework</module>
     </modules>
     <packaging>pom</packaging>
 
