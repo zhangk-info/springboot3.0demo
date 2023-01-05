@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: silver-admin
+    name: demo
   profiles:
     active: dev
   messages:
