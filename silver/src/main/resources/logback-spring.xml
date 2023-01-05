@@ -1,0 +1,18 @@
+<configuration>
+    <!-- 配置控制台的输出日志 -->
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <!-- 定义日志输出的格式 -->
+            <layout class="ch.qos.logback.classic.PatternLayout">
+                <pattern>
+                    %d - [%thread] %-5level %logger{35} - [%line] - %msg%n
+                </pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="consoleLog" />
+    </root>
+
+</configuration>

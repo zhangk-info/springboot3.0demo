@@ -1,0 +1,164 @@
+server:
+  port: 92
+
+spring:
+  application:
+    name: silver-admin
+  profiles:
+    active: dev
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+
+  main:
+    allow-bean-definition-overriding: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+    jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      default-property-inclusion: always #non_null#non_empty
+      time-zone: GMT+8
+    servlet:
+      multipart:
+        max-file-size: 100MB
+        max-request-size: 300MB
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://43.153.19.82:3306/silver?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: zhangkun..123
+    test-while-idle: true
+    time-between-eviction-runs-millis: 3600000
+    validation-query: SELECT 1
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: DatebookHikariCP
+      # 连接池中允许的最小连接数。缺省值：10
+      minimum-idle: 5
+      # 连接池中允许的最大连接数。缺省值：10
+      maximum-pool-size: 15
+      auto-commit: true
+      # 最大闲置时长：一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟
+      idle-timeout: 28500
+      # 数据库连接测试语句
+      connection-test-query: SELECT 1
+      # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
+      # 如果出现 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value. 建议更改mysql：SET GLOBAL connect_timeout = 3600000;
+      max-lifetime: 28700
+      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒
+      connection-timeout: 30000
+  # Flyway 配置
+  flyway:
+    enabled: true
+    # 初始化没有历史记录表就创建
+    baseline-on-migrate: true
+    baselineVersion: 0
+
+  data:
+    redis:
+      host: 81.68.104.177
+      port: 6379
+      password: test
+      database: 10
+#  # 集群模式下的配置
+#      cluster:
+#        nodes:
+#          - 192.168.200.30:16379
+#          - 192.168.200.30:16380
+#          - 192.168.200.30:16381
+
+mybatis-plus:
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    # 显示sql日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:**/mapper/*/*Mapper.xml
+
+logging:
+  level:
+    root: info
+    #org.springframework: DEBUG
+
+
+url:
+  #全局都要放开的路径，不过认证,如：获取token,swagger-ui,静态资源
+  public-ignores:
+    - /*/oauth2/token
+    - /oauth2/token
+    - /swagger-resources/**
+    - /webjars/**
+    - /swagger-ui.html/**
+    - /doc.html
+    - /v3/api-docs/**
+    - /favicon.ico
+  #指定放开的路径，不过认证，如：用户注册，验证码获取，短信验证码获取，自定义路径
+  ignores:
+    - /captchaImage
+    - /login
+
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  # 配置分组
+  group-configs:
+    - group: 'silver'
+      paths-to-match: '/**'
+      packages-to-exclude: 'com.xlj.system'
+      packages-to-scan: com.xlj
+    - group: 'system'
+      paths-to-match: '/**'
+      packages-to-scan: com.xlj.system
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  # 开启服务端Cors配置 这里设置true之后会出错
+  # When allowCredentials is true, allowedOrigins cannot contain the special value "*" since that cannot be set on the "Access-Control-Allow-Origin" response header. To allow credentials to a set of origins, list them explicitly or consider using "allowedOriginPatterns" instead.
+  # https://doc.xiaominfo.com/v2/documentation/host.html
+  cors: false
+  setting:
+    language: zh_cn
+    enableOpenApi: false
+    swaggerModelName: 实体类列表
+    enableSwaggerModels: true
+    enableHost: false
+#    enableHostText: "http://192.168.200.35/api"
+
+# 认证服务在其他地方时需要
+#jwk:
+#  set:
+#    uri: http://127.0.0.1:${server.port}/oauth2/jwks
+
+
+oauth2:
+  authorization:
+    uri: http://127.0.0.1:${server.port}/oauth2/authorize
+  token:
+    uri: http://127.0.0.1:${server.port}/oauth2/token
+    issuer: http://127.0.0.1:${server.port}/
+  access:
+    token:
+      time: "1"
+      time.unit: day
+  refresh:
+    token:
+      time: 4
+      time.unit: day

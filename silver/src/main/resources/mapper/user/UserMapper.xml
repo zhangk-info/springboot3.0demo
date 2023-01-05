@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xlj.user.mapper.UserMapper">
+
+    <!-- 分页列表 -->
+    <select id="findByPage" resultType="com.xlj.user.response.UserVO">
+        select * from users t
+        <where>
+            <if test="query.keyWord != null and query.keyWord != ''">
+                <!--and (t.x like concat('%', #{query.keyWord} ,'%') or t.x like concat('%',#{query.keyWord},'%')-->
+            </if>
+        </where>
+        <if test="query.sortName != null and query.sortName != null">
+            order by ${query.sortName} ${query.sortOrder}
+        </if>
+    </select>
+</mapper>
