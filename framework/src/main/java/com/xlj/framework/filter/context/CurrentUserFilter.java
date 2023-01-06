@@ -81,7 +81,7 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
-        if (matcher(request.getRequestURI())) {
+        if (matcher(request.getRequestURI())||antPathMatcher.match("/logout", request.getRequestURI())) {
             filterChain.doFilter(request, response);
         } else {
             try {
