@@ -1,6 +1,7 @@
 package com.xlj.system.controller;
 
 import com.xlj.common.constants.Constants;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.system.domain.entity.SysMenu;
 import com.xlj.system.domain.entity.SysUser;
@@ -42,8 +43,8 @@ public class SysLoginController {
      * @return 结果
      */
     @PostMapping("/login")
-    public DataResp login(@RequestBody LoginBody loginBody, HttpServletRequest request) {
-        DataResp dataResp = DataResp.success();
+    public AjaxResult login(@RequestBody LoginBody loginBody, HttpServletRequest request) {
+        AjaxResult dataResp = AjaxResult.success();
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(),
                 loginBody.getUuid(), request);
@@ -57,13 +58,13 @@ public class SysLoginController {
      * @return 用户信息
      */
     @GetMapping("getInfo")
-    public DataResp getInfo() {
+    public AjaxResult getInfo() {
         SysUser user = SecurityUtils.getLoginUser().getUser();
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
-        DataResp dataResp = DataResp.success();
+        AjaxResult dataResp = AjaxResult.success();
         dataResp.put("user", user);
         dataResp.put("roles", roles);
         dataResp.put("permissions", permissions);

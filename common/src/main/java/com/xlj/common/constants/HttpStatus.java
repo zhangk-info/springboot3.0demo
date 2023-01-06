@@ -1,4 +1,4 @@
-package com.xlj.system.constant;
+package com.xlj.common.constants;
 
 /**
  * 返回状态码

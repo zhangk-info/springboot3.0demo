@@ -1,36 +1,55 @@
 package com.xlj.common.entity;
 
+import cn.hutool.json.JSONConfig;
 import cn.hutool.json.JSONObject;
 import com.xlj.common.exception.ErrorCode;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author zhangkun
  */
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class DataResp<T> extends JSONObject {
+@Getter
+@Setter
+@Schema(name = "DataResp", description = "请求数据返回消息体")
+public class DataResp<T> extends ResponseEntity<T> {
     /**
      * 系统警告消息
      */
     public static final int WARN = 601;
+    @Schema(description = "数据")
     private T data;
+    @Schema(description = "状态码 0 成功 其他失败", implementation = Object.class)
     private int code = 0;
+    @Schema(description = "返回消息")
     private String msg = "success.";
+    @Hidden
+    private JSONConfig config;
+    @Hidden
+    private JSONObject dateFormat;
+    @Hidden
+    private Boolean empty;
+    @Hidden
+    private Map<String, Object> raw;
 
     public DataResp(int code, String message, T data) {
+        super(HttpStatusCode.valueOf(200));
         this.code = code;
         this.msg = message;
         this.data = data;
-        super.set("code", code);
-        super.set("msg", message);
-        super.set("data", data);
+//        super.set("code", code);
+//        super.set("msg", message);
+//        super.set("data", data);
     }
 
     public DataResp(T data) {
+        super(HttpStatusCode.valueOf(200));
         this.data = data;
     }
 

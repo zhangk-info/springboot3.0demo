@@ -2,6 +2,7 @@ package com.xlj.system.controller;
 
 import com.xlj.common.annotation.Log;
 import com.xlj.common.constants.Constants;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.enums.BusinessType;
 import com.xlj.system.constant.UserConstants;
@@ -65,9 +66,9 @@ public class SysMenuController extends BaseController {
      * 加载对应角色菜单列表树
      */
     @GetMapping(value = "/roleMenuTreeselect/{roleId}")
-    public DataResp roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
+    public AjaxResult roleMenuTreeselect(@PathVariable("roleId") Long roleId) {
         List<SysMenu> menus = menuService.selectMenuList(getUserId());
-        DataResp dataResp = DataResp.success();
+        AjaxResult dataResp = AjaxResult.success();
         dataResp.put("checkedKeys", menuService.selectMenuListByRoleId(roleId));
         dataResp.put("menus", menuService.buildMenuTreeSelect(menus));
         return dataResp;

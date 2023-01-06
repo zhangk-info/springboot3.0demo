@@ -1,7 +1,7 @@
 package com.xlj.system.security;
 
 import com.xlj.common.exception.ServiceException;
-import com.xlj.system.constant.HttpStatus;
+import com.xlj.common.constants.HttpStatus;
 import com.xlj.system.domain.model.LoginUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

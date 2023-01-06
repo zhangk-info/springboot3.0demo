@@ -6,6 +6,7 @@ import com.google.code.kaptcha.Producer;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.xlj.common.constants.Constants;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.system.configuration.RedisService;
 import com.xlj.system.constant.CacheConstants;
@@ -71,8 +72,8 @@ public class CaptchaController {
      * 生成验证码
      */
     @GetMapping("/captchaImage")
-    public DataResp getCode(HttpServletResponse response) throws IOException {
-        DataResp ajax = DataResp.success();
+    public AjaxResult getCode(HttpServletResponse response) throws IOException {
+        AjaxResult ajax = AjaxResult.success();
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         ajax.put("captchaEnabled", captchaEnabled);
         if (!captchaEnabled) {

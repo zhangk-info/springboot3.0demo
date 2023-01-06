@@ -1,6 +1,7 @@
 package com.xlj.system.controller;
 
 import com.xlj.common.annotation.Log;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.enums.BusinessType;
 import com.xlj.system.constant.UserConstants;
@@ -35,10 +36,10 @@ public class SysProfileController extends BaseController {
      * 个人信息
      */
     @GetMapping
-    public DataResp profile() {
+    public AjaxResult profile() {
         LoginUser loginUser = getLoginUser();
         SysUser user = loginUser.getUser();
-        DataResp dataResp = DataResp.success(user);
+        AjaxResult dataResp = AjaxResult.success(user);
         dataResp.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
         dataResp.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
         return dataResp;
@@ -104,18 +105,18 @@ public class SysProfileController extends BaseController {
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
-    public DataResp avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
+    public AjaxResult avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             LoginUser loginUser = getLoginUser();
             String avatar = "";//FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
-                DataResp dataResp = DataResp.success();
+                AjaxResult dataResp = AjaxResult.success();
                 dataResp.put("imgUrl", avatar);
                 // 更新缓存用户头像
                 loginUser.getUser().setAvatar(avatar);
                 return dataResp;
             }
         }
-        return error("上传图片异常，请联系管理员");
+        return AjaxResult.error("上传图片异常，请联系管理员");
     }
 }

@@ -1,6 +1,7 @@
 package com.xlj.system.controller;
 
 import com.xlj.common.annotation.Log;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.enums.BusinessType;
 import com.xlj.common.utils.ExcelUtil;
@@ -77,11 +78,11 @@ public class SysUserController extends BaseController {
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
     @PreAuthorize("@ss.hasPermi('system:user:import')")
     @PostMapping("/importData")
-    public DataResp importData(MultipartFile file, boolean updateSupport) throws Exception {
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
         List<SysUser> userList = new ArrayList<>();//util.importExcel(file.getInputStream());
         Long operName = getUserId();
         String message = userService.importUser(userList, updateSupport, operName);
-        return success(message);
+        return AjaxResult.success(message);
     }
 
     /**
@@ -89,15 +90,15 @@ public class SysUserController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:user:query')")
     @GetMapping(value = {"/", "/{userId}"})
-    public DataResp getInfo(@PathVariable(value = "userId", required = false) Long userId) {
+    public AjaxResult getInfo(@PathVariable(value = "userId", required = false) Long userId) {
         userService.checkUserDataScope(userId);
-        DataResp dataResp = DataResp.success();
+        AjaxResult dataResp = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
         dataResp.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         dataResp.put("posts", postService.selectPostAll());
         if (Objects.nonNull(userId)) {
             SysUser sysUser = userService.selectUserById(userId);
-            dataResp.setData(sysUser);
+            dataResp.put("data",sysUser);
             dataResp.put("postIds", postService.selectPostListByUserId(userId));
             dataResp.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
         }
@@ -192,8 +193,8 @@ public class SysUserController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:user:query')")
     @GetMapping("/authRole/{userId}")
-    public DataResp authRole(@PathVariable("userId") Long userId) {
-        DataResp dataResp = DataResp.success();
+    public AjaxResult authRole(@PathVariable("userId") Long userId) {
+        AjaxResult dataResp = AjaxResult.success();
         SysUser user = userService.selectUserById(userId);
         List<SysRole> roles = roleService.selectRolesByUserId(userId);
         dataResp.put("user", user);

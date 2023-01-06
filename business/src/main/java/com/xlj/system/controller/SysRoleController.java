@@ -1,6 +1,7 @@
 package com.xlj.system.controller;
 
 import com.xlj.common.annotation.Log;
+import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.enums.BusinessType;
 import com.xlj.common.utils.ExcelUtil;
@@ -225,8 +226,8 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:role:query')")
     @GetMapping(value = "/deptTree/{roleId}")
-    public DataResp deptTree(@PathVariable("roleId") Long roleId) {
-        DataResp dataResp = DataResp.success();
+    public AjaxResult deptTree(@PathVariable("roleId") Long roleId) {
+        AjaxResult dataResp = AjaxResult.success();
         dataResp.put("checkedKeys", deptService.selectDeptListByRoleId(roleId));
         dataResp.put("depts", deptService.selectDeptTreeList(new SysDept()));
         return dataResp;
