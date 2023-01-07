@@ -168,7 +168,7 @@
                     </from>
                     <to>
                         <!-- 这里一定要用repository中配置的http端口，否则会使用v2 -->
-                        <image>ip:6000/repository/docker-myself/silver-admin:${project.version}</image>
+                        <image>ip:6000/repository/demo:${project.version}</image>
                         <auth>
                             <username>xxx</username>
                             <password>xxx</password>
