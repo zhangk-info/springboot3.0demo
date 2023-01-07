@@ -54,7 +54,7 @@ public class FastAutoGeneratorTest {
                             .enableFileOverride();
                     builder.serviceBuilder().enableFileOverride();
                     builder.mapperBuilder().enableFileOverride();
-                    builder.controllerBuilder().enableRestStyle().enableFileOverride();
+                    builder.controllerBuilder().enableRestStyle().enableHyphenStyle().enableFileOverride();
                     builder.addInclude("users") // 设置需要生成的表名
                             .addTableSuffix("s")
                             .addTablePrefix("t_", "c_"); // 设置过滤表前缀
