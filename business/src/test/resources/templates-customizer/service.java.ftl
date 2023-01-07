@@ -31,10 +31,10 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
     /**
      * 新增或修改
      *
-     * @param ${entity}DTO 请求体对象
+     * @param ${entity?uncap_first}DTO 请求体对象
      * @return 实体对象
      */
-    ${entity}VO createOrUpdate(${entity}DTO ${entity}DTO);
+    ${entity}VO createOrUpdate(${entity}DTO ${entity?uncap_first}DTO);
 
     /**
      * 删除

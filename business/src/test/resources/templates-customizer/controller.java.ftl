@@ -55,7 +55,7 @@ public class ${table.controllerName} {
 </#if>
 
     @Autowired
-    private I${entity}Service ${entity}Service;
+    private I${entity}Service ${entity?uncap_first}Service;
 
     /**
      * 分页列表
@@ -66,19 +66,19 @@ public class ${table.controllerName} {
     @GetMapping
     @Operation(summary = "分页列表", description = "分页列表")
     DataResp<IPage<${entity}VO>> page(${entity}QueryDTO queryDTO) {
-        return DataResp.success(${entity}Service.findByPage(queryDTO));
+        return DataResp.success(${entity?uncap_first}Service.findByPage(queryDTO));
     }
 
     /**
      * 新增或修改
      *
-     * @param ${entity}DTO 请求体对象
+     * @param ${entity?uncap_first}DTO 请求体对象
      * @return 实体对象
      */
     @PostMapping
     @Operation(summary = "新增或修改", description = "新增或修改")
-    DataResp<${entity}VO> createOrUpdate(@RequestBody @Valid ${entity}DTO ${entity}DTO) {
-        return DataResp.success(${entity}Service.createOrUpdate(${entity}DTO));
+    DataResp<${entity}VO> createOrUpdate(@RequestBody @Valid ${entity}DTO ${entity?uncap_first}DTO) {
+        return DataResp.success(${entity?uncap_first}Service.createOrUpdate(${entity?uncap_first}DTO));
     }
 
     /**
@@ -90,7 +90,7 @@ public class ${table.controllerName} {
     @DeleteMapping("{id}")
     @Operation(summary = "删除", description = "删除")
     DataResp<Boolean> save(@PathVariable Long id) {
-        return DataResp.success(${entity}Service.delete(id));
+        return DataResp.success(${entity?uncap_first}Service.delete(id));
     }
 
     /**
@@ -106,7 +106,7 @@ public class ${table.controllerName} {
     DataResp<Boolean> check(@Parameter(description = "编辑时的主键") Long id,
                             @Parameter(description = "查询重复的字段") String field,
                             @Parameter(description = "值") String value) {
-        return DataResp.success(${entity}Service.check(id, field, value));
+        return DataResp.success(${entity?uncap_first}Service.check(id, field, value));
     }
 }
 </#if>

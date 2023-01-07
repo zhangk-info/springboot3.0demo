@@ -49,19 +49,19 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     /**
      * 新增或修改
      *
-     * @param ${entity}DTO 请求体对象
+     * @param ${entity?uncap_first}DTO 请求体对象
      * @return 实体对象
      */
     @Override
-    public ${entity}VO createOrUpdate(${entity}DTO ${entity}DTO) {
+    public ${entity}VO createOrUpdate(${entity}DTO ${entity?uncap_first}DTO) {
         ${entity} ${entity};
-        if (Objects.isNull(${entity}DTO.getId())) {
+        if (Objects.isNull(${entity?uncap_first}DTO.getId())) {
             ${entity} = new ${entity}();
         } else {
-            ${entity} = this.getById(${entity}DTO.getId());
+            ${entity} = this.getById(${entity?uncap_first}DTO.getId());
         }
         // 复制
-        BeanUtil.copyProperties(${entity}DTO, ${entity});
+        BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity});
         // 保存或更新
         this.saveOrUpdate(${entity});
         // 转换为VO并返回
