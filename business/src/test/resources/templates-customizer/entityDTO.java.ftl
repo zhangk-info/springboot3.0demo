@@ -63,8 +63,6 @@ public class ${entity} {
         <#assign keyPropertyName="${field.propertyName}"/>
     </#if>
     <#if !field.logicDeleteField>
-
-    </#if>
     <#if field.comment!?length gt 0>
         <#if springdoc>
     @Schema(description = "${field.comment}")
@@ -76,6 +74,8 @@ public class ${entity} {
      */
         </#if>
     </#if>
+    </#if>
+
     <#if field.keyFlag>
         <#-- 主键 -->
         <#if field.keyIdentityFlag>
