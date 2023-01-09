@@ -39,10 +39,10 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
     /**
      * 删除
      *
-     * @param id 删除的ID
+     * @param ids 删除的ID
      * @return 成功状态
      */
-    Boolean delete(Long id);
+    Boolean delete(Long[] ids);
 
     /**
      * 重复检查

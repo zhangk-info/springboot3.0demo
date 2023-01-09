@@ -16,6 +16,7 @@ import ${package.Parent}.request.${entity}QueryDTO;
 import ${package.Parent}.response.${entity}VO;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -71,12 +72,12 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     /**
      * 删除
      *
-     * @param id 删除的ID
+     * @param ids 删除的ID
      * @return 成功状态
      */
     @Override
-    public Boolean delete(Long id) {
-        return this.removeById(id);
+    public Boolean delete(Long[] ids) {
+        return this.removeBatchByIds(Arrays.asList(ids));
     }
 
     /**

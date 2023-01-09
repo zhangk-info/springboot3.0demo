@@ -84,13 +84,13 @@ public class ${table.controllerName} {
     /**
      * 删除
      *
-     * @param id 删除的ID
+     * @param ids 删除的ID
      * @return 成功状态
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("{ids}")
     @Operation(summary = "删除", description = "删除")
-    DataResp<Boolean> save(@PathVariable Long id) {
-        return DataResp.success(${entity?uncap_first}Service.delete(id));
+    DataResp<Boolean> batchDel(@PathVariable Long[] ids) {
+        return DataResp.success(${entity?uncap_first}Service.delete(ids));
     }
 
     /**

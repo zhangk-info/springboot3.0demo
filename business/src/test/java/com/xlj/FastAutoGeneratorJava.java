@@ -2,7 +2,6 @@ package com.xlj;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
-import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 
 import java.sql.SQLException;
@@ -16,7 +15,7 @@ import java.util.Collections;
  * @author lanjerry
  * @since 2021-09-16
  */
-public class FastAutoGeneratorTest {
+public class FastAutoGeneratorJava {
 
     /**
      * 执行 run
@@ -27,11 +26,10 @@ public class FastAutoGeneratorTest {
                 .globalConfig(builder -> {
                     builder.author("zhangkun") // 设置作者
                             .enableSpringdoc() // 开启 swagger 模式
-                            .outputDir("C:\\workspace\\springboot3.0demo\\silver\\src\\test\\java"); // 指定输出目录
+                            .outputDir("C:\\workspace\\silver-admin\\silver\\src\\test\\java"); // 指定输出目录
                 })
                 .templateConfig(builder -> {
-                    builder.disable(TemplateType.ENTITY)
-                            .entity("/templates-customizer/entity.java")
+                    builder.entity("/templates-customizer/entity.java")
                             .service("/templates-customizer/service.java")
                             .serviceImpl("/templates-customizer/serviceImpl.java")
                             .mapper("/templates-customizer/mapper.java")
@@ -42,7 +40,7 @@ public class FastAutoGeneratorTest {
                     builder
                             .parent("generator") // 设置父包名
                             .moduleName("") // 设置父包模块名
-                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C:\\workspace\\springboot3.0demo\\silver\\src\\test\\java\\mapper")); // 设置mapperXml生成路径
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C:\\workspace\\silver-admin\\silver\\src\\test\\java\\mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
                     // 配置文件可覆盖
@@ -50,12 +48,12 @@ public class FastAutoGeneratorTest {
                             .enableLombok()
                             .logicDeleteColumnName("is_delete")
                             .superClass(com.xlj.common.entity.BaseEntity.class)
-                            .addSuperEntityColumns("created_at", "updated_at", "deleted_at")
+                            .addSuperEntityColumns("create_at", "create_by", "update_at", "update_by", "delete_at", "delete_by")
                             .enableFileOverride();
                     builder.serviceBuilder().enableFileOverride();
                     builder.mapperBuilder().enableFileOverride();
                     builder.controllerBuilder().enableRestStyle().enableHyphenStyle().enableFileOverride();
-                    builder.addInclude("store") // 设置需要生成的表名
+                    builder.addInclude("feedback") // 设置需要生成的表名
                             .addTableSuffix("s")
                             .addTablePrefix("t_", "c_"); // 设置过滤表前缀
                 })
