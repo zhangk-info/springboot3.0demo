@@ -6,6 +6,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * mybatis-plus自动填充配置
@@ -29,7 +30,7 @@ public class CommonMetaObjectHandler implements MetaObjectHandler {
         this.setFieldValByName("update_at", new Date(), metaObject);
         this.setFieldValByName("update_by", UserContext.getId(),metaObject);
         Integer isDelete = (Integer) this.getFieldValByName("is_delete", metaObject);
-        if (isDelete.equals(1)) {
+        if (Objects.nonNull(isDelete) && isDelete.equals(1)) {
             this.setFieldValByName("delete_at", new Date(), metaObject);
             this.setFieldValByName("delete_by", UserContext.getId(),metaObject);
         }
