@@ -4,6 +4,7 @@ package ${package.Parent}.response;
 import ${pkg};
 </#list>
 import java.io.Serial;
+import java.util.Date;
 <#if springdoc>
 import io.swagger.v3.oas.annotations.media.Schema;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
@@ -15,6 +16,7 @@ import io.swagger.annotations.ApiModelProperty;
 <#if entityLombokModel>
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
     <#if chainModel>
 import lombok.experimental.Accessors;
     </#if>
@@ -31,6 +33,7 @@ import lombok.experimental.Accessors;
 <#if entityLombokModel>
 @Getter
 @Setter
+@ToString
     <#if chainModel>
 @Accessors(chain = true)
     </#if>
@@ -126,7 +129,6 @@ public class ${entity} {
     public ${field.propertyType} ${getprefix}${field.capitalName}() {
         return ${field.propertyName};
     }
-
     <#if chainModel>
     public ${entity} set${field.capitalName}(${field.propertyType} ${field.propertyName}) {
     <#else>
@@ -171,4 +173,16 @@ public class ${entity} {
         "}";
     }
 </#if>
+
+    @Schema(description = "创建时间")
+    private Date createAt;
+
+    @Schema(description = "更新时间")
+    private Date updateAt;
+
+    @Schema(description = "创建人")
+    private Long createBy;
+
+    @Schema(description = "更新人")
+    private Long updateBy;
 }
