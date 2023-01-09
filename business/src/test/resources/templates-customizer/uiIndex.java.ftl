@@ -58,9 +58,9 @@
         :show-overflow-tooltip="true"
       />
       <el-table-column label="创建者" align="center" prop="createBy" width="100" />
-      <el-table-column label="创建时间" align="center" prop="createAt" width="100">
+      <el-table-column label="创建时间" align="center" prop="createAt" width="150">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createAt, '{y}-{m}-{d} {H}:{M}:{s}') }}</span>
+          <span>{{ parseTime(scope.row.createAt, '{y}-{m}-{d} {hh}:{mm}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
