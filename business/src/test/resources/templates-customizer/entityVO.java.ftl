@@ -116,6 +116,9 @@ public class ${entity} {
     </#if>
     -->
     <#if !field.logicDeleteField>
+    <#if field.propertyType == "Long">
+    @JsonSerialize(using = ToStringSerializer.class)
+    </#if>
     private ${field.propertyType} ${field.propertyName};
     </#if>
 </#list>
@@ -127,7 +130,6 @@ public class ${entity} {
         <#else>
             <#assign getprefix="get"/>
         </#if>
-
     public ${field.propertyType} ${getprefix}${field.capitalName}() {
         return ${field.propertyName};
     }
@@ -175,7 +177,6 @@ public class ${entity} {
         "}";
     }
 </#if>
-
     @Schema(description = "创建时间")
     private Date createAt;
 
