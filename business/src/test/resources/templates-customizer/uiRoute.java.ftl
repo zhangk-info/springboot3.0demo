@@ -10,9 +10,9 @@ export function list${entity}(query) {
 }
 
 // 查询${table.comment!}详细
-export function get${entity}(${controllerMappingHyphen}Id) {
+export function get${entity}(${entity?uncap_first}Id) {
   return request({
-    url: '/${controllerMappingHyphen}s/' + ${controllerMappingHyphen}Id,
+    url: '/${controllerMappingHyphen}s/' + ${entity?uncap_first}Id,
     method: 'get'
   })
 }
@@ -36,9 +36,9 @@ export function update${entity}(data) {
 }
 
 // 删除${table.comment!}
-export function del${entity}(${controllerMappingHyphen}Ids) {
+export function del${entity}(${entity?uncap_first}Ids) {
   return request({
-    url: '/${controllerMappingHyphen}s/' + ${controllerMappingHyphen}Ids,
+    url: '/${controllerMappingHyphen}s/' + ${entity?uncap_first}Ids,
     method: 'delete'
   })
 }
