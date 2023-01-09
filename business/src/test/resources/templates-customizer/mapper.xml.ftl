@@ -41,8 +41,9 @@
     <select id="findByPage" resultType="${package.Parent}.response.${entity}VO">
         select * from ${table.name} t
         <where>
+            is_delete = 0
             <if test="query.keyWord != null and query.keyWord != ''">
-                ${r"<!--and (t.x like concat('%', #{query.keyWord} ,'%') or t.x like concat('%',#{query.keyWord},'%')-->"}
+                and ${r"<!--and (t.x like concat('%', #{query.keyWord} ,'%') or t.x like concat('%',#{query.keyWord},'%'))-->"}
             </if>
         </where>
         <if test="query.sortName != null and query.sortName != null">
