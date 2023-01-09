@@ -99,14 +99,24 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
     }
 
     /**
+     * 详情
+     * @param id ID
+     * @return 实体对象
+     */
+    @Override
+    public ${entity}VO getVoById(Long id) {
+        return convertVo(getById(id));
+    }
+
+    /**
      * 类型转换成vo
      *
-     * @param ${entity} 转换前entity
+     * @param ${entity?uncap_first} 转换前entity
      * @return 转换后vo
      */
-    private ${entity}VO convertVo(${entity} ${entity}) {
+    private ${entity}VO convertVo(${entity} ${entity?uncap_first}) {
         ${entity}VO vo = new ${entity}VO();
-        BeanUtil.copyProperties(${entity}, vo);
+        BeanUtil.copyProperties(${entity?uncap_first}, vo);
         return vo;
     }
 }

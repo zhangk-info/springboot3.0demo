@@ -94,6 +94,18 @@ public class ${table.controllerName} {
     }
 
     /**
+     * 详情
+     *
+     * @param id ID
+     * @return 实体对象
+     */
+    @GetMapping("{id}")
+    @Operation(summary = "详情", description = "详情")
+    DataResp<${entity}VO> getVo(@PathVariable Long id) {
+        return DataResp.success(${entity?uncap_first}Service.getVoById(id));
+    }
+
+    /**
      * 重复检查
      *
      * @param id    ID

@@ -45,6 +45,13 @@ public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
     Boolean delete(Long[] ids);
 
     /**
+     * 详情
+     * @param id ID
+     * @return 实体对象
+     */
+    ${entity}VO getVoById(Long id);
+
+    /**
      * 重复检查
      *
      * @param id    ID
