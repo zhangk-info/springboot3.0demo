@@ -41,7 +41,6 @@ import lombok.experimental.Accessors;
     </#if>
 </#if>
 <#if table.convert>
-@TableName("${schemaName}${table.name}")
 </#if>
 <#if springdoc>
 @Schema(name = "${entity}VO", description = "${table.comment!}VO对象")

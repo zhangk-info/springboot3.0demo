@@ -55,18 +55,18 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      */
     @Override
     public ${entity}VO createOrUpdate(${entity}DTO ${entity?uncap_first}DTO) {
-        ${entity} ${entity};
+        ${entity} ${entity?uncap_first};
         if (Objects.isNull(${entity?uncap_first}DTO.getId())) {
-            ${entity} = new ${entity}();
+            ${entity?uncap_first} = new ${entity}();
         } else {
-            ${entity} = this.getById(${entity?uncap_first}DTO.getId());
+            ${entity?uncap_first} = this.getById(${entity?uncap_first}DTO.getId());
         }
         // 复制
-        BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity});
+        BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity?uncap_first});
         // 保存或更新
-        this.saveOrUpdate(${entity});
+        this.saveOrUpdate(${entity?uncap_first});
         // 转换为VO并返回
-        return convertVo(${entity});
+        return convertVo(${entity?uncap_first});
     }
 
     /**

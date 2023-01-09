@@ -185,9 +185,7 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        id: undefined,
-        ${entity?uncap_first}Title: undefined,
-        ${entity?uncap_first}Type: undefined
+        id: undefined
       };
       this.resetForm("form");
     },
