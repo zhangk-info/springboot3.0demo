@@ -183,10 +183,8 @@ public class ${entity} {
     private Date updateAt;
 
     @Schema(description = "创建人")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long createBy;
+    private String createBy;
 
     @Schema(description = "更新人")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long updateBy;
+    private String updateBy;
 }

@@ -44,15 +44,13 @@ public class BaseEntity implements Serializable {
      * 创建者
      */
     @TableField(fill = FieldFill.INSERT)
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long createBy;
+    private String createBy;
 
     /**
      * 更新者
      */
     @TableField(fill = FieldFill.UPDATE)
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long updateBy;
+    private String updateBy;
 
     /**
      * 删除时间
@@ -64,8 +62,7 @@ public class BaseEntity implements Serializable {
      * 删除者
      */
     @TableField(fill = FieldFill.UPDATE)
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long deleteBy;
+    private String deleteBy;
 
     /**
      * 请求参数

@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>
@@ -91,4 +92,16 @@ public class UserVO implements Serializable {
     @Schema(description = "金店店铺详细地址")
     @ExcelProperty("金店店铺详细地址")
     private String address;
+
+    @Schema(description = "创建时间")
+    private Date createAt;
+
+    @Schema(description = "更新时间")
+    private Date updateAt;
+
+    @Schema(description = "创建人")
+    private String createBy;
+
+    @Schema(description = "更新人")
+    private String updateBy;
 }
