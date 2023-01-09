@@ -16,7 +16,7 @@ public class BaseQuery {
     @Schema(description = "每页行数，默认20")
     private Integer pageSize = 20;
     @Schema(description = "排序字段")
-    private String sortName = "id";
+    private String sortName = "t.id";
     @Schema(description = "排序方式 ASC 升序 DESC 降序")
     private String sortOrder = "DESC";
 
@@ -38,7 +38,7 @@ public class BaseQuery {
 
     public String getSortName() {
         //大写转下划线
-        return SqlUtils.camelToUnderline(StringUtils.isNotBlank(sortName) ? this.sortName : "id");
+        return SqlUtils.camelToUnderline(StringUtils.isNotBlank(sortName) ? this.sortName : "t.id");
     }
 
     public void setSortName(String sortName) {

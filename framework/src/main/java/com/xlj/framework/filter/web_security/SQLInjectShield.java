@@ -20,9 +20,9 @@ public class SQLInjectShield {
     /**
      * 特殊字符
      * 原有配置： "[ _`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t"
-     * 现有配置： 允许,以传入多个排序条件
+     * 现有配置： 允许,以传入多个排序条件 允许.以允许join表排序
      */
-    public static String KES_SYMBOL = "[ _`~!@#$%^&*()+=|{}':;'\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
+    public static String KES_SYMBOL = "[ _`~!@#$%^&*()+=|{}':;'\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？]|\n|\r|\t";
     private static Pattern p = Pattern.compile(KES_SYMBOL);
 
     static {
