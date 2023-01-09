@@ -50,7 +50,6 @@
 
     <el-table v-loading="loading" :data="${entity?uncap_first}List" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" width="100" />
       <el-table-column
         label="标题"
         align="center"
