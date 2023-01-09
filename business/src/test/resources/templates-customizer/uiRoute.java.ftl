@@ -3,16 +3,16 @@ import request from '@/utils/request'
 // 查询${table.comment!}分页列表
 export function list${entity}(query) {
   return request({
-    url: '/${entity?uncap_first}s',
+    url: '/${controllerMappingHyphen}s',
     method: 'get',
     params: query
   })
 }
 
 // 查询${table.comment!}详细
-export function get${entity}(${entity?uncap_first}Id) {
+export function get${entity}(${controllerMappingHyphen}Id) {
   return request({
-    url: '/${entity?uncap_first}s/' + ${entity?uncap_first}Id,
+    url: '/${controllerMappingHyphen}s/' + ${controllerMappingHyphen}Id,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function get${entity}(${entity?uncap_first}Id) {
 // 新增${table.comment!}
 export function add${entity}(data) {
   return request({
-    url: '/${entity?uncap_first}s',
+    url: '/${controllerMappingHyphen}s',
     method: 'post',
     data: data
   })
@@ -29,16 +29,16 @@ export function add${entity}(data) {
 // 修改${table.comment!}
 export function update${entity}(data) {
   return request({
-    url: '/${entity?uncap_first}s',
+    url: '/${controllerMappingHyphen}s',
     method: 'post',
     data: data
   })
 }
 
 // 删除${table.comment!}
-export function del${entity}(${entity?uncap_first}Ids) {
+export function del${entity}(${controllerMappingHyphen}Ids) {
   return request({
-    url: '/${entity?uncap_first}s/' + ${entity?uncap_first}Ids,
+    url: '/${controllerMappingHyphen}s/' + ${controllerMappingHyphen}Ids,
     method: 'delete'
   })
 }
