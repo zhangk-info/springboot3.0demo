@@ -173,7 +173,7 @@ export default {
       this.loading = true;
       list${entity}(this.queryParams).then(response => {
         this.${entity?uncap_first}List = response.data.records;
-        this.total = response.total;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
