@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -23,6 +25,7 @@ import java.util.Map;
 public class BaseEntity implements Serializable {
 
     @TableId(type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -41,12 +44,14 @@ public class BaseEntity implements Serializable {
      * 创建者
      */
     @TableField(fill = FieldFill.INSERT)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
 
     /**
      * 更新者
      */
     @TableField(fill = FieldFill.UPDATE)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
 
     /**
@@ -59,6 +64,7 @@ public class BaseEntity implements Serializable {
      * 删除者
      */
     @TableField(fill = FieldFill.UPDATE)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long deleteBy;
 
     /**

@@ -62,6 +62,7 @@ public class ${entity} {
     private static final long serialVersionUID = 1L;
 
     @Schema(description = "ID")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 </#if>
 <#-- ----------  BEGIN 字段循环遍历  ---------->
@@ -181,8 +182,10 @@ public class ${entity} {
     private Date updateAt;
 
     @Schema(description = "创建人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long createBy;
 
     @Schema(description = "更新人")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long updateBy;
 }
