@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -24,10 +25,18 @@ import java.util.Objects;
 /**
  * 数据过滤处理
  *
- * @author ruoyi
+ * @author
+ * @EnableAspectJAutoProxy 写了这个之后本类调用本类时才能正常使用本类中的其他代理或者@Async 方法
+ * SpringUtils.getAopProxy(this).selectUserList(user)
+ * selectUserList方法上写了自定义注解，自己调用自己是没有被代理的
+ * exposeProxy = true
+ * 指定代理被AOP框架作为ThreadLocal暴露出来，可以被 AopContext 类获取。默认 false
+ * proxyTargetClass = true
+ * 指示是否要创建基于子类(CGLIB)
  */
 @Aspect
 @Component
+@EnableAspectJAutoProxy(exposeProxy = true, proxyTargetClass = true)
 public class DataScopeAspect {
     /**
      * 全部数据权限
