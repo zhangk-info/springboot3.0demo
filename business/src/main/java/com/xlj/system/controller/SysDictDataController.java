@@ -83,7 +83,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
     public DataResp add(@Validated @RequestBody SysDictData dict) {
-        dict.setCreateBy(getUserId());
+        dict.setCreateBy(getUsername());
         return toAjax(dictDataService.insertDictData(dict));
     }
 
@@ -94,7 +94,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
     public DataResp edit(@Validated @RequestBody SysDictData dict) {
-        dict.setUpdateBy(getUserId());
+        dict.setUpdateBy(getUsername());
         return toAjax(dictDataService.updateDictData(dict));
     }
 

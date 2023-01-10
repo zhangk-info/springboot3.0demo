@@ -1,4 +1,4 @@
-package com.xlj.system.security;
+package com.xlj.framework.configuration.auth;
 
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.constants.HttpStatus;

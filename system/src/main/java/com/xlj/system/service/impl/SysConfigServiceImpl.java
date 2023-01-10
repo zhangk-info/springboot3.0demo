@@ -1,14 +1,13 @@
 package com.xlj.system.service.impl;
 
 import cn.hutool.core.convert.Convert;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.constant.UserConstants;
 import com.xlj.system.domain.entity.SysConfig;
 import com.xlj.system.mapper.SysConfigMapper;
 import com.xlj.system.service.ISysConfigService;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

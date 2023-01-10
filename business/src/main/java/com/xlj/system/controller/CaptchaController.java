@@ -2,29 +2,22 @@ package com.xlj.system.controller;
 
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.util.IdUtil;
-import com.google.code.kaptcha.Producer;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.constants.Constants;
 import com.xlj.common.entity.AjaxResult;
-import com.xlj.common.entity.DataResp;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.service.ISysConfigService;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.util.Base64Utils;
-import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 验证码操作处理

@@ -3,6 +3,7 @@ package com.xlj.framework.configuration.auth.service;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.constants.Constants;
 import com.xlj.common.context.UserType;
 import com.xlj.common.exception.ServiceException;
@@ -12,7 +13,6 @@ import com.xlj.framework.configuration.auth.exception.UserPasswordRetryLimitExce
 import com.xlj.framework.manager.AsyncManager;
 import com.xlj.framework.manager.factory.AsyncFactory;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.domain.entity.SysUser;
 import com.xlj.system.domain.model.LoginUser;
 import com.xlj.system.enums.UserStatus;

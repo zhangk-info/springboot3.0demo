@@ -1,7 +1,7 @@
 package com.xlj.system.service.impl;
 
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.domain.entity.SysLogininfor;
 import com.xlj.system.mapper.SysLogininforMapper;
 import com.xlj.system.service.ISysLogininforService;

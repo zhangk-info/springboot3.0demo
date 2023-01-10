@@ -6,7 +6,7 @@ import com.xlj.common.entity.DataResp;
 import com.xlj.system.domain.entity.SysMenu;
 import com.xlj.system.domain.entity.SysUser;
 import com.xlj.system.domain.model.LoginBody;
-import com.xlj.system.security.SecurityUtils;
+import com.xlj.framework.configuration.auth.SecurityUtils;
 import com.xlj.system.service.ISysMenuService;
 import com.xlj.system.service.SysLoginService;
 import com.xlj.system.service.SysPermissionService;

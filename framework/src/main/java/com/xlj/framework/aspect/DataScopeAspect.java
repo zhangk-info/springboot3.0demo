@@ -1,4 +1,4 @@
-package com.xlj.aspect;
+package com.xlj.framework.aspect;
 
 import cn.hutool.core.convert.Convert;
 import com.xlj.common.annotation.DataScope;
@@ -6,8 +6,8 @@ import com.xlj.common.entity.BaseEntity;
 import com.xlj.system.domain.entity.SysRole;
 import com.xlj.system.domain.entity.SysUser;
 import com.xlj.system.domain.model.LoginUser;
-import com.xlj.system.security.SecurityUtils;
-import com.xlj.system.security.context.PermissionContextHolder;
+import com.xlj.framework.configuration.auth.SecurityUtils;
+import com.xlj.common.context.PermissionContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;

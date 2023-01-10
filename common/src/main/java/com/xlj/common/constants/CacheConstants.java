@@ -1,4 +1,4 @@
-package com.xlj.system.constant;
+package com.xlj.common.constants;
 
 /**
  * 缓存的key 常量

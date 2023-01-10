@@ -1,8 +1,8 @@
 package com.xlj.system.utils;
 
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.spring.SpringUtils;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.domain.entity.SysDictData;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -91,7 +91,7 @@ public class SysRoleController extends BaseController {
         } else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role))) {
             return error("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
-        role.setCreateBy(getUserId());
+        role.setCreateBy(getUsername());
         return toAjax(roleService.insertRole(role));
 
     }
@@ -110,7 +110,7 @@ public class SysRoleController extends BaseController {
         } else if (UserConstants.NOT_UNIQUE.equals(roleService.checkRoleKeyUnique(role))) {
             return error("修改角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
-        role.setUpdateBy(getUserId());
+        role.setUpdateBy(getUsername());
 
         if (roleService.updateRole(role) > 0) {
             // 更新缓存用户权限
@@ -145,7 +145,7 @@ public class SysRoleController extends BaseController {
     public DataResp changeStatus(@RequestBody SysRole role) {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
-        role.setUpdateBy(getUserId());
+        role.setUpdateBy(getUsername());
         return toAjax(roleService.updateRoleStatus(role));
     }
 

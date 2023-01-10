@@ -9,7 +9,7 @@ import com.xlj.system.domain.model.LoginUser;
 import com.xlj.system.page.PageDomain;
 import com.xlj.system.page.TableDataInfo;
 import com.xlj.system.page.TableSupport;
-import com.xlj.system.security.SecurityUtils;
+import com.xlj.framework.configuration.auth.SecurityUtils;
 import com.xlj.system.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

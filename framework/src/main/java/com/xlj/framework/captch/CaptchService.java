@@ -1,11 +1,11 @@
 package com.xlj.framework.captch;
 
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.constants.Constants;
 import com.xlj.common.utils.MessageUtils;
 import com.xlj.framework.manager.AsyncManager;
 import com.xlj.framework.manager.factory.AsyncFactory;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import com.xlj.system.exception.CaptchaException;
 import com.xlj.system.exception.CaptchaExpireException;
 import org.apache.commons.lang3.StringUtils;

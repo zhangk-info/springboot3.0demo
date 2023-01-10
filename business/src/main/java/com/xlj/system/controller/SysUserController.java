@@ -10,7 +10,7 @@ import com.xlj.system.domain.entity.SysDept;
 import com.xlj.system.domain.entity.SysRole;
 import com.xlj.system.domain.entity.SysUser;
 import com.xlj.system.page.TableDataInfo;
-import com.xlj.system.security.SecurityUtils;
+import com.xlj.framework.configuration.auth.SecurityUtils;
 import com.xlj.system.service.ISysDeptService;
 import com.xlj.system.service.ISysPostService;
 import com.xlj.system.service.ISysRoleService;
@@ -80,7 +80,7 @@ public class SysUserController extends BaseController {
     @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
         List<SysUser> userList = new ArrayList<>();//util.importExcel(file.getInputStream());
-        Long operName = getUserId();
+        String operName = getUsername();
         String message = userService.importUser(userList, updateSupport, operName);
         return AjaxResult.success(message);
     }
@@ -121,7 +121,7 @@ public class SysUserController extends BaseController {
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
             return error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        user.setCreateBy(getUserId());
+        user.setCreateBy(getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         return toAjax(userService.insertUser(user));
     }
@@ -144,7 +144,7 @@ public class SysUserController extends BaseController {
                 && UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {
             return error("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
-        user.setUpdateBy(getUserId());
+        user.setUpdateBy(getUsername());
         return toAjax(userService.updateUser(user));
     }
 
@@ -171,7 +171,7 @@ public class SysUserController extends BaseController {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getId());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        user.setUpdateBy(getUserId());
+        user.setUpdateBy(getUsername());
         return toAjax(userService.resetPwd(user));
     }
 
@@ -184,7 +184,7 @@ public class SysUserController extends BaseController {
     public DataResp changeStatus(@RequestBody SysUser user) {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getId());
-        user.setUpdateBy(getUserId());
+        user.setUpdateBy(getUsername());
         return toAjax(userService.updateUserStatus(user));
     }
 

@@ -2,12 +2,12 @@ package com.xlj.framework.interceptor.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.xlj.common.annotation.RepeatSubmit;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.constants.Constants;
 import com.xlj.common.utils.HttpHelper;
 import com.xlj.framework.filter.web_security.RepeatedlyRequestWrapper;
 import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.constant.CacheConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
