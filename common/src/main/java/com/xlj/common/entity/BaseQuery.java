@@ -20,6 +20,17 @@ public class BaseQuery {
     @Schema(description = "排序方式 ASC 升序 DESC 降序")
     private String sortOrder = "DESC";
 
+    @Schema(description = "数据权限")
+    private String dataScope = "";
+
+    public String getDataScope() {
+        return dataScope;
+    }
+
+    public void setDataScope(String dataScope) {
+        this.dataScope = dataScope;
+    }
+
     public Integer getPageNum() {
         return this.pageNum;
     }

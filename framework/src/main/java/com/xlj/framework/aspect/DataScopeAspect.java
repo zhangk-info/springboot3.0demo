@@ -3,6 +3,7 @@ package com.xlj.framework.aspect;
 import cn.hutool.core.convert.Convert;
 import com.xlj.common.annotation.DataScope;
 import com.xlj.common.entity.BaseEntity;
+import com.xlj.common.entity.BaseQuery;
 import com.xlj.system.domain.entity.SysRole;
 import com.xlj.system.domain.entity.SysUser;
 import com.xlj.system.domain.model.LoginUser;
@@ -101,9 +102,10 @@ public class DataScopeAspect {
 
         if (StringUtils.isNotBlank(sqlString.toString())) {
             Object params = joinPoint.getArgs()[0];
-            if (Objects.nonNull(params) && params instanceof BaseEntity) {
-                BaseEntity baseEntity = (BaseEntity) params;
+            if (Objects.nonNull(params) && params instanceof BaseEntity baseEntity) {
                 baseEntity.getParams().put(DATA_SCOPE, " AND (" + sqlString.substring(4) + ")");
+            }else if (Objects.nonNull(params) && params instanceof BaseQuery baseQuery) {
+                baseQuery.setDataScope(" AND (" + sqlString.substring(4) + ")");
             }
         }
     }
