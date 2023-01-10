@@ -36,7 +36,7 @@ public class BaseHandlerForException {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Object validateExceptionHandler(HttpServletResponse response, ValidateException ex) {
-        DataResp<Object> dataResp = new DataResp<>(ErrorCode.SQL_ERROR.code, ErrorCode.SQL_ERROR.getMessage(ex.getMessage()), null);
+        DataResp<Object> dataResp = new DataResp<>(ErrorCode.PARAMS_ERR.code, ErrorCode.PARAMS_ERR.getMessage(ex.getMessage()), null);
         log.error(ex.getMessage(), ex);
         return dataResp;
     }
