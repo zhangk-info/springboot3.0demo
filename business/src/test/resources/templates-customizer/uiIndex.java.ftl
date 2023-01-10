@@ -50,12 +50,17 @@
 
     <el-table v-loading="loading" :data="${entity?uncap_first}List" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column
-        label="标题"
-        align="center"
-        prop="${entity?uncap_first}Title"
-        :show-overflow-tooltip="true"
-      />
+    <#list table.fields as field>
+        <#-- 普通字段 -->
+        <#if !field.logicDeleteField>
+        <el-table-column
+                label="${field.comment}"
+                align="center"
+                prop="${field.propertyName}"
+                :show-overflow-tooltip="true"
+              />
+        </#if>
+    </#list>
       <el-table-column label="创建者" align="center" prop="createBy" width="100" />
       <el-table-column label="创建时间" align="center" prop="createAt" width="150">
         <template slot-scope="scope">
@@ -92,18 +97,18 @@
     <el-dialog :title="title" :visible.sync="open" width="780px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
-          <el-col :span="12">
-            <el-form-item label="标题" prop="${entity?uncap_first}Title">
-              <el-input v-model="form.${entity?uncap_first}Title" placeholder="请输入${table.comment!}标题" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="类型" prop="${entity?uncap_first}Type">
-
-            </el-form-item>
-          </el-col>
+          <#list table.fields as field>
+              <#-- 普通字段 -->
+              <#if !field.logicDeleteField>
+              <el-col :span="12">
+                  <el-form-item label="${field.comment}" prop="${field.propertyName}">
+                    <el-input v-model="form.${field.propertyName}" placeholder="请输入${field.comment}" />
+                  </el-form-item>
+                </el-col>
+              </#if>
+          </#list>
           <el-col :span="24">
-            <el-form-item label="状态">
+            <el-form-item label="">
 
             </el-form-item>
           </el-col>
@@ -155,12 +160,14 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        ${entity?uncap_first}Title: [
-          { required: true, message: "标题不能为空", trigger: "blur" }
-        ],
-        ${entity?uncap_first}Type: [
-          { required: true, message: "类型不能为空", trigger: "change" }
-        ]
+        <#list table.fields as field>
+              <#-- 普通字段 -->
+              <#if !field.logicDeleteField>
+              ${field.propertyName}: [
+                        { required: true, message: "${field.comment}不能为空", trigger: "blur" }
+                      ],
+              </#if>
+          </#list>
       }
     };
   },

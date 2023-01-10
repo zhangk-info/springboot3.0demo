@@ -49,7 +49,7 @@ public class ObjectMapperConfig {
     private RequestMappingHandlerAdapter handlerAdapter;
 
     @Bean
-    private ObjectMapper getSelfObjectMapper() {
+    public ObjectMapper getSelfObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         //序列换成json时,将所有的long变成string.因为js中得数字类型不能包含所有的java long值，超过16位后会出现精度丢失
         SimpleModule simpleModule = new SimpleModule();
