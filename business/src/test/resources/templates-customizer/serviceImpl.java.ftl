@@ -15,6 +15,7 @@ import ${package.Parent}.request.${entity}DTO;
 import ${package.Parent}.request.${entity}QueryDTO;
 import ${package.Parent}.response.${entity}VO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -54,6 +55,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      * @return 实体对象
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ${entity}VO createOrUpdate(${entity}DTO ${entity?uncap_first}DTO) {
         ${entity} ${entity?uncap_first};
         if (Objects.isNull(${entity?uncap_first}DTO.getId())) {
@@ -76,6 +78,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      * @return 成功状态
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean delete(Long[] ids) {
         return this.removeBatchByIds(Arrays.asList(ids));
     }

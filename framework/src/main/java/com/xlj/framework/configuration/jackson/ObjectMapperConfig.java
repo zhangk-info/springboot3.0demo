@@ -51,11 +51,11 @@ public class ObjectMapperConfig {
     @Bean
     public ObjectMapper getSelfObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        //序列换成json时,将所有的long变成string.因为js中得数字类型不能包含所有的java long值，超过16位后会出现精度丢失
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
-        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
-        objectMapper.registerModule(simpleModule);
+        //序列换成json时,将所有的long变成string.因为js中得数字类型不能包含所有的java long值，超过16位后会出现精度丢失 这里不能直接这么做 page的total这些也是Long类型
+//        SimpleModule simpleModule = new SimpleModule();
+//        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+//        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+//        objectMapper.registerModule(simpleModule);
 
         JavaTimeModule javaTimeModule = new JavaTimeModule();
         //日期序列化
