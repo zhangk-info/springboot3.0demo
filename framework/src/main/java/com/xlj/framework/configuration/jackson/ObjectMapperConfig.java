@@ -1,9 +1,8 @@
 package com.xlj.framework.configuration.jackson;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -51,7 +50,12 @@ public class ObjectMapperConfig {
     @Bean
     public ObjectMapper getSelfObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        //序列换成json时,将所有的long变成string.因为js中得数字类型不能包含所有的java long值，超过16位后会出现精度丢失 这里不能直接这么做 page的total这些也是Long类型
+        // 设置FAIL_ON_UNKNOWN_PROPERTIES为false
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        // 设置useTimestamp为false
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+//        //序列换成json时,将所有的long变成string.因为js中得数字类型不能包含所有的java long值，超过16位后会出现精度丢失
 //        SimpleModule simpleModule = new SimpleModule();
 //        simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
 //        simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
@@ -68,6 +72,7 @@ public class ObjectMapperConfig {
         javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)));
         javaTimeModule.addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
         objectMapper.registerModule(javaTimeModule);
+        objectMapper.findAndRegisterModules();
         return objectMapper;
     }
 
@@ -79,8 +84,6 @@ public class ObjectMapperConfig {
                     if (c instanceof MappingJackson2HttpMessageConverter jsonMessageConverter) {
                         // 使用自定义的
                         ObjectMapper objectMapper = getSelfObjectMapper();
-                        // 设置useTimestamp为false
-                        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
                         jsonMessageConverter.setObjectMapper(objectMapper);
                     }
                 });
