@@ -18,7 +18,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 
     @Autowired
-    private SameUrlDataInterceptor repeatSubmitInterceptor;
+    private SameUrlDataInterceptor sameUrlDataInterceptor;
 
     /**
      * 配置静态资源处理的两种方式，两种方式任选其一
@@ -63,7 +63,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(sameUrlDataInterceptor).addPathPatterns("/**");
     }
 
 }
