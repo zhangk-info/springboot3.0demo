@@ -1,6 +1,6 @@
 package com.xlj.framework.configuration.webmvc;
 
-import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
+import com.xlj.framework.interceptor.impl.SameUrlDataInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -16,6 +16,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 
+
+    @Autowired
+    private SameUrlDataInterceptor repeatSubmitInterceptor;
 
     /**
      * 配置静态资源处理的两种方式，两种方式任选其一
@@ -42,7 +45,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         super.addResourceHandlers(registry);
     }
 
-
     /**
      * 放开跨域请求
      */
@@ -56,15 +58,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .maxAge(3600);
     }
 
-    @Autowired
-    private RepeatSubmitInterceptor repeatSubmitInterceptor;
-
     /**
      * 自定义拦截规则
      */
     @Override
-    public void addInterceptors(InterceptorRegistry registry)
-    {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
     }
 

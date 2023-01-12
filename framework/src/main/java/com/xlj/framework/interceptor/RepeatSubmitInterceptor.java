@@ -17,7 +17,6 @@ import java.lang.reflect.Method;
  *
  * @author ruoyi
  */
-@Component
 public abstract class RepeatSubmitInterceptor implements HandlerInterceptor {
 
     @Override
