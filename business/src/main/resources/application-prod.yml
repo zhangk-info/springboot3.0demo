@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: silver-admin
+  datasource:
+    url: jdbc:mysql://47.109.34.96:33306/silver-prod?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false&maxReconnects=5
+    username: root
+    password: RlcGFy36
+
+  data:
+    redis:
+      host: 81.68.104.177
+      port: 6379
+      password: test
+      database: 12
+      timeout: 5000
+
+logging:
+  level:
+    root: error
+    #org.springframework: DEBUG
+
+
+

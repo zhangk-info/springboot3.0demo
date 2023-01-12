@@ -21,11 +21,9 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     default-property-inclusion: always #non_null#non_empty
     time-zone: GMT+8
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.153.19.82:3306/silver?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: root
-    password: zhangkun..123
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       # 池名称
@@ -33,24 +31,24 @@ spring:
       # 连接池中允许的最小连接数。缺省值：等于maximum-pool-size
       # 此属性控制 HikariCP 尝试在池中维护的最小空闲连接数。 如果空闲连接低于这个值并且池中的总连接小于 maximumPoolSize，
       # HikariCP 将尽最大努力快速有效地添加额外的连接。 但是，为了获得最大性能和对峰值需求的响应，我们建议不要设置此值 不设置的话idle-timeout不会使用
-      minimum-idle: 5
+      # minimum-idle: 5
       # 连接池中允许的最大连接数。缺省值：10
-      maximum-pool-size: 10
+      maximum-pool-size: 2
       # 自动提交
       auto-commit: true
       # 最大闲置时长：一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 600000
       # 此属性控制允许连接在池中闲置的最长时间。 此设置仅在 minimumIdle 定义为小于 maximumPoolSize 时适用。
       # 一旦池达到 minimumIdle 连接数，空闲连接将不会被淘汰。 连接是否因空闲而退出取决于最大 30 秒的变化，平均变化 15 秒。 在此超时之前，连接永远不会因空闲而退出。
       # 值为 0 表示永远不会从池中删除空闲连接。
-      idle-timeout: 250000
+      # idle-timeout: 55000
       # 数据库连接测试语句
       connection-test-query: SELECT 1
       # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
-      max-lifetime: 260000
+      max-lifetime: 60000
       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
       connection-timeout: 3000
-      # 验证连接有效性的超时时间
-      validation-timeout: 500
+      # 验证连接有效性的超时时间 默认是5秒，最小不能小于250毫秒
+      validation-timeout: 250
   # Flyway 配置
   flyway:
     enabled: true
@@ -60,10 +58,6 @@ spring:
 
   data:
     redis:
-      host: 81.68.104.177
-      port: 6379
-      password: test
-      database: 10
       timeout: 5000
       jedis:
         pool:
@@ -90,7 +84,6 @@ logging:
     #org.springframework: DEBUG
 
 mybatis-plus:
-
   global-config:
     db-config:
       #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
@@ -101,8 +94,6 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
-    # 显示sql日志
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:**/mapper/*/*Mapper.xml
 
 url:

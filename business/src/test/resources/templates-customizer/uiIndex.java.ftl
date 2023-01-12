@@ -251,7 +251,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ${entity?uncap_first}Ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除${table.comment!}编号为"' + ${entity?uncap_first}Ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除${table.comment!}').then(function() {
         return del${entity}(${entity?uncap_first}Ids);
       }).then(() => {
         this.getList();
