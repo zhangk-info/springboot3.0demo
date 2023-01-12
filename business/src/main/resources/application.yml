@@ -42,12 +42,11 @@ spring:
       # 此属性控制允许连接在池中闲置的最长时间。 此设置仅在 minimumIdle 定义为小于 maximumPoolSize 时适用。
       # 一旦池达到 minimumIdle 连接数，空闲连接将不会被淘汰。 连接是否因空闲而退出取决于最大 30 秒的变化，平均变化 15 秒。 在此超时之前，连接永远不会因空闲而退出。
       # 值为 0 表示永远不会从池中删除空闲连接。
-      idle-timeout: 600000
+      idle-timeout: 250000
       # 数据库连接测试语句
       connection-test-query: SELECT 1
       # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
-      # 如果出现 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value. 建议更改mysql：SET GLOBAL connect_timeout = 3600000;
-      max-lifetime: 3500000
+      max-lifetime: 300000
       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
       connection-timeout: 3000
       initialization-fail-timeout: 1000
