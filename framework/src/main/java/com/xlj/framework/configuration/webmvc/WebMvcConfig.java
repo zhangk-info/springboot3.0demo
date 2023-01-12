@@ -1,7 +1,10 @@
 package com.xlj.framework.configuration.webmvc;
 
+import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -51,6 +54,18 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .allowCredentials(false)
                 .allowedMethods("*")
                 .maxAge(3600);
+    }
+
+    @Autowired
+    private RepeatSubmitInterceptor repeatSubmitInterceptor;
+
+    /**
+     * 自定义拦截规则
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry)
+    {
+        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
     }
 
 }
