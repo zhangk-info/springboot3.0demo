@@ -3,51 +3,54 @@ server:
 
 spring:
   application:
-    name: demo
+    name: silver-admin
   profiles:
     active: dev
   messages:
     basename: i18n/messages
     encoding: UTF-8
-
   main:
     allow-bean-definition-overriding: true
   mvc:
     throw-exception-if-no-handler-found: true
-    jackson:
-      date-format: yyyy-MM-dd HH:mm:ss
-      default-property-inclusion: always #non_null#non_empty
-      time-zone: GMT+8
-    servlet:
-      multipart:
-        max-file-size: 100MB
-        max-request-size: 300MB
-
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 300MB
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    default-property-inclusion: always #non_null#non_empty
+    time-zone: GMT+8
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://43.153.19.82:3306/silver?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: zhangkun..123
-    test-while-idle: true
-    time-between-eviction-runs-millis: 3600000
-    validation-query: SELECT 1
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      pool-name: DatebookHikariCP
-      # 连接池中允许的最小连接数。缺省值：10
-      minimum-idle: 5
+      # 池名称
+      pool-name: HikariDataSourcePool
+      # 连接池中允许的最小连接数。缺省值：等于maximum-pool-size
+      # 此属性控制 HikariCP 尝试在池中维护的最小空闲连接数。 如果空闲连接低于这个值并且池中的总连接小于 maximumPoolSize，
+      # HikariCP 将尽最大努力快速有效地添加额外的连接。 但是，为了获得最大性能和对峰值需求的响应，我们建议不要设置此值
+      # minimum-idle: 5
       # 连接池中允许的最大连接数。缺省值：10
       maximum-pool-size: 15
+      # 自动提交
       auto-commit: true
-      # 最大闲置时长：一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟
-      idle-timeout: 28500
+      # 最大闲置时长：一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 600000
+      # 此属性控制允许连接在池中闲置的最长时间。 此设置仅在 minimumIdle 定义为小于 maximumPoolSize 时适用。
+      # 一旦池达到 minimumIdle 连接数，空闲连接将不会被淘汰。 连接是否因空闲而退出取决于最大 30 秒的变化，平均变化 15 秒。 在此超时之前，连接永远不会因空闲而退出。
+      # 值为 0 表示永远不会从池中删除空闲连接。
+      idle-timeout: 600000
       # 数据库连接测试语句
       connection-test-query: SELECT 1
       # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
       # 如果出现 (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value. 建议更改mysql：SET GLOBAL connect_timeout = 3600000;
-      max-lifetime: 28700
-      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒
-      connection-timeout: 30000
+      max-lifetime: 3500000
+      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
+      connection-timeout: 3000
+      initialization-fail-timeout: 1000
   # Flyway 配置
   flyway:
     enabled: true
@@ -61,6 +64,19 @@ spring:
       port: 6379
       password: test
       database: 10
+      timeout: 5000
+      jedis:
+        pool:
+          # 连接池中的最小空闲连接
+          min-idle: 0
+          # 连接池中的最大空闲连接
+          max-idle: 8
+          # 连接池的最大数据库连接数
+          max-active: 8
+          # #连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: -1ms
+          # 空闲对象逐出器线程的运行间隔时间.空闲连接线程释放周期时间.
+          time-between-eviction-runs: 3600
 #  # 集群模式下的配置
 #      cluster:
 #        nodes:
@@ -68,30 +84,26 @@ spring:
 #          - 192.168.200.30:16380
 #          - 192.168.200.30:16381
 
+logging:
+  level:
+    root: info
+    #org.springframework: DEBUG
+
 mybatis-plus:
+
   global-config:
-    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
-    id-type: 0
-    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
-    field-strategy: 2
-    #驼峰下划线转换
-    db-column-underline: true
-    #刷新mapper 调试神器
-    refresh-mapper: true
-    #数据库大写下划线转换
-    #capital-mode: true
+    db-config:
+      #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+      id-type:
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      insert-strategy: NOT_NULL
+      update-strategy: NOT_NULL
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
     # 显示sql日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:**/mapper/*/*Mapper.xml
-
-logging:
-  level:
-    root: info
-    #org.springframework: DEBUG
-
 
 url:
   #全局都要放开的路径，不过认证,如：获取token,swagger-ui,静态资源
@@ -108,7 +120,6 @@ url:
   ignores:
     - /captchaImage
     - /login
-
 
 # springdoc-openapi项目配置
 springdoc:
@@ -127,6 +138,7 @@ springdoc:
     - group: 'system'
       paths-to-match: '/**'
       packages-to-scan: com.xlj.system
+
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true
@@ -146,7 +158,6 @@ knife4j:
 #jwk:
 #  set:
 #    uri: http://127.0.0.1:${server.port}/oauth2/jwks
-
 
 oauth2:
   authorization:
