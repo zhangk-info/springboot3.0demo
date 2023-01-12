@@ -25,16 +25,16 @@ public class CommonMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         this.setFieldValByName("updateAt", new Date(), metaObject);
-        this.setFieldValByName("updateBy", UserContext.getId(), metaObject);
-        Integer isDelete = (Integer) this.getFieldValByName("isDelete", metaObject);
-        if (Objects.nonNull(isDelete) && isDelete.equals(1)) {
+        this.setFieldValByName("updateBy", getCurrentUser(), metaObject);
+        Boolean isDelete = (Boolean) this.getFieldValByName("isDelete", metaObject);
+        if (Objects.nonNull(isDelete) && isDelete) {
             this.setFieldValByName("deleteAt", new Date(), metaObject);
-            this.setFieldValByName("deleteBy", UserContext.getId(), metaObject);
+            this.setFieldValByName("deleteBy", getCurrentUser(), metaObject);
         }
     }
 
     private String getCurrentUser() {
-        return String.format("%s(%s)", UserContext.getUsername(), UserContext.getName());
+        return String.format("%s(%s)", UserContext.getName(), UserContext.getId());
     }
 
 }
