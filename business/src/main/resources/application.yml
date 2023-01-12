@@ -49,7 +49,8 @@ spring:
       max-lifetime: 260000
       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
       connection-timeout: 3000
-      initialization-fail-timeout: 1000
+      # 验证连接有效性的超时时间
+      validation-timeout: 500
   # Flyway 配置
   flyway:
     enabled: true
