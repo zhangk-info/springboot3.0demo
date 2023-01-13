@@ -12,7 +12,6 @@ import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizerHandler;
 import com.xlj.framework.configuration.auth.customizer.jwt.impl.JwtCustomizerImpl;
 import com.xlj.framework.configuration.auth.customizer.token.claims.OAuth2TokenClaimsCustomizer;
 import com.xlj.framework.configuration.auth.customizer.token.claims.impl.OAuth2TokenClaimsCustomizerImpl;
-import com.xlj.framework.configuration.auth.exception.CustomAuthenticationFailureHandler;
 import com.xlj.framework.configuration.auth.handler.LogoutSuccessHandlerImpl;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;
@@ -44,7 +43,6 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Arrays;
@@ -100,8 +98,10 @@ public class AuthorizationServerConfiguration {
                         new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
         )));
 
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint ->
-                authorizationEndpoint.errorResponseHandler(new CustomAuthenticationFailureHandler()));
+//        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
+//            authorizationEndpoint.authorizationResponseHandler(new CustomerAuthenticationSuccessHandler());
+//            authorizationEndpoint.errorResponseHandler(new CustomAuthenticationFailureHandler());
+//        });
 
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 

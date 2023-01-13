@@ -1,15 +1,12 @@
 package com.xlj.common.constants;
 
 
-import org.apache.tomcat.util.http.parser.Authorization;
-
 /**
  * 通用常量信息
- * 
+ *
  * @author ruoyi
  */
-public class Constants
-{
+public class Constants {
     /**
      * UTF-8 字符集
      */
@@ -85,4 +82,5 @@ public class Constants
      */
     public static final String LOGIN_FAIL = "Error";
 
+    public static final long LOGIN_LOCK_TIME = 300L;
 }
