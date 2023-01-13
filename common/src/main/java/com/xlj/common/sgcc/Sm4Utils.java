@@ -57,13 +57,9 @@ public class Sm4Utils {
      */
     @Test
     public void test() {
-        String str = "123456";
+        String str = "gdMfxJAPzBItGBxo724Byg";
         try {
-            // 得到随机的key
-            byte[] key = SmUtil.sm4().getSecretKey().getEncoded();
-            System.out.println(Base64Utils.encodeToString(key));
-
-            String encodeStr = encrypt(str);
+            String encodeStr = encrypt(KEY);
             System.out.println(encodeStr);
             System.out.println(decrypt(encodeStr));
         } catch (Exception e) {
