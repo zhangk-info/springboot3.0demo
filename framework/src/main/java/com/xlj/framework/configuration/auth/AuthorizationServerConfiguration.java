@@ -12,6 +12,9 @@ import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizerHandler;
 import com.xlj.framework.configuration.auth.customizer.jwt.impl.JwtCustomizerImpl;
 import com.xlj.framework.configuration.auth.customizer.token.claims.OAuth2TokenClaimsCustomizer;
 import com.xlj.framework.configuration.auth.customizer.token.claims.impl.OAuth2TokenClaimsCustomizerImpl;
+import com.xlj.framework.configuration.auth.federated.identity.EntryPointCustomizer;
+import com.xlj.framework.configuration.auth.handler.CustomerAuthenticationFailureHandler;
+import com.xlj.framework.configuration.auth.handler.CustomerAuthenticationSuccessHandler;
 import com.xlj.framework.configuration.auth.handler.LogoutSuccessHandlerImpl;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;
@@ -62,6 +65,10 @@ public class AuthorizationServerConfiguration {
 
     @Resource
     private LogoutSuccessHandlerImpl logoutSuccessHandler;
+    @Autowired
+    private CustomerAuthenticationFailureHandler authenticationFailureHandler;
+    @Autowired
+    private CustomerAuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Autowired
     private Sm4Utils sm4Utils;
@@ -75,7 +82,8 @@ public class AuthorizationServerConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new SM4PasswordEncoder(sm4Utils);
     }
-
+    @Autowired
+    private EntryPointCustomizer entryPointCustomizer;
     /**
      * 主要配置
      *
@@ -89,32 +97,35 @@ public class AuthorizationServerConfiguration {
 
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
-        // tokenEndpoint
-        http.apply(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> tokenEndpoint.accessTokenRequestConverter(
-                new DelegatingAuthenticationConverter(Arrays.asList(
+        // 配置OAuth2 Token endpoint
+        http.apply(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
+            tokenEndpoint.accessTokenRequestConverter(
+                    new DelegatingAuthenticationConverter(Arrays.asList(
 //				new OAuth2AuthorizationCodeAuthenticationConverter(),
-                        new OAuth2RefreshTokenAuthenticationConverter(),
+                            new OAuth2RefreshTokenAuthenticationConverter(),
 //				new OAuth2ClientCredentialsAuthenticationConverter(),
-                        new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
-        )));
+                            new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
+            );
+            tokenEndpoint.accessTokenResponseHandler(authenticationSuccessHandler);
+            tokenEndpoint.errorResponseHandler(authenticationFailureHandler);
+        }));
 
-//        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
-//            authorizationEndpoint.authorizationResponseHandler(new CustomerAuthenticationSuccessHandler());
-//            authorizationEndpoint.errorResponseHandler(new CustomAuthenticationFailureHandler());
-//        });
+        // 配置OAuth2 Authorization endpoint.
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
+        });
 
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
-//                .exceptionHandling((exceptions) -> exceptions
-//                        .authenticationEntryPoint(
-//                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)
-//                                /*new LoginUrlAuthenticationEntryPoint("/login")*/)
-//                )
                 .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                .apply(authorizationServerConfigurer);
+                .apply(authorizationServerConfigurer)
+                .and()
+                .exceptionHandling((exceptions) -> exceptions
+                        .authenticationEntryPoint(entryPointCustomizer
+                                /*new LoginUrlAuthenticationEntryPoint("/login")*/)
+                );
 //                .and()
 //                .apply(new FederatedIdentityConfigurer());
         http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);

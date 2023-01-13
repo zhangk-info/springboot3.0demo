@@ -3,6 +3,8 @@ package com.xlj.system.service;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.http.HttpGlobalConfig;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.http.Method;
 import cn.hutool.json.JSONConfig;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -58,6 +61,8 @@ public class SysLoginService {
 
     @Autowired
     private CaptchService captchService;
+    @Autowired
+    private VerificationService verificationService;
 
     /**
      * 登录验证
@@ -73,7 +78,7 @@ public class SysLoginService {
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         // 验证码开关
         if (captchaEnabled) {
-            captchService.validateCaptcha(username, code, uuid);
+            verificationService.validate(username, code, uuid);
         }
 
         Map<String, Object> loginParams = new HashMap<>();
@@ -83,25 +88,38 @@ public class SysLoginService {
         loginParams.put("client_id", "password");
         loginParams.put("client_secret", "xinglianjing");
         StringBuilder cookieStr = new StringBuilder(StringUtils.EMPTY);
-        for (Cookie cookie : request.getCookies()) {
-            cookieStr.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
+        Cookie[] cookies = request.getCookies();
+        if (Objects.nonNull(cookies)) {
+            for (Cookie cookie : cookies) {
+                cookieStr.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
+            }
         }
         HttpRequest httpRequest = HttpUtil.createRequest(Method.POST, tokenUri).form(loginParams).cookie(cookieStr.toString());
-        String res = httpRequest.timeout(HttpGlobalConfig.getTimeout()).execute().body();
-        JSONObject resData = JSONUtil.parseObj(res);
-        String access_token = resData.getStr("access_token");
-        if (StringUtils.isNotBlank(access_token)) {
+        HttpResponse response = httpRequest.timeout(HttpGlobalConfig.getTimeout()).execute();
+        Integer status = response.getStatus();
+        String res = response.body();
+        if (!status.equals(HttpStatus.HTTP_OK)) {
+            // 失败会返回错误消息
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, res));
+            throw new ServiceException(res);
+        }
+        JSONObject resData = new JSONObject();
+        if (JSONUtil.isTypeJSON(res)) {
+            resData = JSONUtil.parseObj(res);
+        }
+        String accessToken = resData.getStr("access_token");
+        if (StringUtils.isNotBlank(accessToken)) {
             // 成功会返回token
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
-            Jwt jwt = jwtDecoder.decode(access_token);
+            Jwt jwt = jwtDecoder.decode(accessToken);
             LoginUser loginUser = JSONUtil.toBean(JSONUtil.toJsonStr(jwt.getClaims()), JSONConfig.create().setIgnoreError(true), LoginUser.class);
             recordLoginInfo(loginUser.getUserId());
             // 生成token
-            return access_token;
+            return accessToken;
         } else {
             // 失败会返回错误消息
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, resData.getStr("msg")));
-            throw new ServiceException(resData.getStr("msg"));
+            throw new ServiceException(StringUtils.isBlank(resData.getStr("msg")) ? "" : resData.getStr("msg"));
         }
 
     }

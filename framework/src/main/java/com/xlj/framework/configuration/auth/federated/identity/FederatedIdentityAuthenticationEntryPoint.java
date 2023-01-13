@@ -3,7 +3,6 @@ package com.xlj.framework.configuration.auth.federated.identity;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -26,7 +25,7 @@ public final class FederatedIdentityAuthenticationEntryPoint implements Authenti
 
     public FederatedIdentityAuthenticationEntryPoint(String loginPageUrl, ClientRegistrationRepository clientRegistrationRepository) {
 //		this.delegate = new LoginUrlAuthenticationEntryPoint(loginPageUrl);
-        this.delegate = new HttpStatusEntryPointCustomizer(HttpStatus.UNAUTHORIZED);
+        this.delegate = new EntryPointCustomizer();
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 

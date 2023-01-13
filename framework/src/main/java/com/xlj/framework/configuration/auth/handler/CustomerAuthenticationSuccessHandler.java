@@ -1,16 +1,27 @@
 package com.xlj.framework.configuration.auth.handler;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.xlj.common.constants.CacheConstants;
 import com.xlj.system.configuration.RedisService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.OAuth2RefreshToken;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 /**
  * 自定义登录成功后处理
@@ -34,9 +45,40 @@ public class CustomerAuthenticationSuccessHandler implements AuthenticationSucce
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         // 登录成功后产出账户密码错误次数限制
-        String loginName = request.getParameter("username");
-        if (redisCache.hasKey(getCacheKey(loginName))) {
-            redisCache.del(getCacheKey(loginName));
+        String username = request.getParameter("username");
+        if (JSONUtil.isTypeJSON(username)) {
+            // 如果是json表示是后台用户登录，走后台登录逻辑
+            JSONObject jsonObject = JSONUtil.parseObj(username);
+            username = jsonObject.getStr("username");
         }
+        if (redisCache.hasKey(getCacheKey(username))) {
+            redisCache.del(getCacheKey(username));
+        }
+
+        // OAuth2TokenEndpointFilter.authenticationSuccessHandler
+        OAuth2AccessTokenAuthenticationToken accessTokenAuthentication =
+                (OAuth2AccessTokenAuthenticationToken) authentication;
+
+        OAuth2AccessToken accessToken = accessTokenAuthentication.getAccessToken();
+        OAuth2RefreshToken refreshToken = accessTokenAuthentication.getRefreshToken();
+        Map<String, Object> additionalParameters = accessTokenAuthentication.getAdditionalParameters();
+
+        OAuth2AccessTokenResponse.Builder builder =
+                OAuth2AccessTokenResponse.withToken(accessToken.getTokenValue())
+                        .tokenType(accessToken.getTokenType())
+                        .scopes(accessToken.getScopes());
+        if (accessToken.getIssuedAt() != null && accessToken.getExpiresAt() != null) {
+            builder.expiresIn(ChronoUnit.SECONDS.between(accessToken.getIssuedAt(), accessToken.getExpiresAt()));
+        }
+        if (refreshToken != null) {
+            builder.refreshToken(refreshToken.getTokenValue());
+        }
+        if (!CollectionUtils.isEmpty(additionalParameters)) {
+            builder.additionalParameters(additionalParameters);
+        }
+        OAuth2AccessTokenResponse accessTokenResponse = builder.build();
+        ServletServerHttpResponse httpResponse = new ServletServerHttpResponse(response);
+        new OAuth2AccessTokenResponseHttpMessageConverter().write(accessTokenResponse, null, httpResponse);
+
     }
 }
