@@ -1,9 +1,8 @@
 package com.xlj.common.sgcc;
 
 import cn.hutool.crypto.SmUtil;
-import cn.hutool.crypto.symmetric.SymmetricCrypto;
+import cn.hutool.crypto.symmetric.SM4;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
@@ -17,9 +16,10 @@ public class Sm4Utils {
 
     public static final String KEY = "gdMfxJAPzBItGBxo724Byg==";
 
-    @Bean
-    public static SymmetricCrypto sm4(){
-        return SmUtil.sm4(Base64Utils.decodeFromString(KEY));
+    private final SM4 sm4;
+
+    public Sm4Utils() {
+        this.sm4 = SmUtil.sm4(Base64Utils.decodeFromString(KEY));
     }
 
     /**
@@ -29,9 +29,8 @@ public class Sm4Utils {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String str) throws Exception {
+    public String decrypt(String str) throws Exception {
         try {
-            SymmetricCrypto sm4 = sm4();
             return sm4.decryptStr(str);
         } catch (Exception e) {
             return null;
@@ -45,8 +44,7 @@ public class Sm4Utils {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String str) throws Exception {
-        SymmetricCrypto sm4 = sm4();
+    public String encrypt(String str) throws Exception {
         return sm4.encryptHex(str);
     }
 

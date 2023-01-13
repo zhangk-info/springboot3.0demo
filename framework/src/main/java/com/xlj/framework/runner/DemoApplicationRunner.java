@@ -4,7 +4,6 @@ import com.xlj.common.entity.AjaxResult;
 import com.xlj.common.entity.DataResp;
 import com.xlj.system.service.ISysConfigService;
 import com.xlj.system.service.ISysDictTypeService;
-import jakarta.annotation.PostConstruct;
 import org.springdoc.core.converters.ConverterUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -12,7 +11,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SilverApplicationRunner implements ApplicationRunner {
+public class DemoApplicationRunner implements ApplicationRunner {
 
     @Autowired
     private ISysConfigService sysConfigService;

@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: silver-admin
+    name: demo-admin
   profiles:
     active: dev
   messages:
@@ -122,7 +122,7 @@ springdoc:
     path: /v3/api-docs
   # 配置分组
   group-configs:
-    - group: 'silver'
+    - group: 'demo'
       paths-to-match: '/**'
       packages-to-exclude: 'com.xlj.system'
       packages-to-scan: com.xlj

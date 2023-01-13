@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.sgcc.Sm2Utils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -19,7 +21,6 @@ import java.util.List;
  * 密文传输
  * ResponseBodyAdvice
  * 将Controller返回参数进行加密传输
- * 服务中配置方法 {@link CipherConfig})
  * <p>
  * fix bug : @ControllerAdvice里面包含了@Component，所以该类会自动注入
  * 使用@Conditional(Sm2EnableCondtion.class)
@@ -43,16 +44,17 @@ import java.util.List;
 @Slf4j
 public class MyResponseBodyAdvice implements ResponseBodyAdvice {
 
-    private String publicKeyB;
 
+    @Value("${sm2.uri.ignores:}")
+    List<String> ignoreUris;
     private ObjectMapper objectMapper;
+    private Sm2Utils sm2Utils;
 
-    private List<String> ignoreUris;
-
-    public MyResponseBodyAdvice(String publicKeyB, ObjectMapper objectMapper, List<String> ignoreUris) {
-        this.publicKeyB = publicKeyB;
+    @Autowired
+    public MyResponseBodyAdvice(ObjectMapper objectMapper, List<String> ignoreUris, Sm2Utils sm2Utils) {
         this.objectMapper = objectMapper;
         this.ignoreUris = ignoreUris;
+        this.sm2Utils = sm2Utils;
     }
 
     /**
@@ -71,7 +73,7 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (!selectedContentType.getSubtype().equals("json")) {
+        if (!"json".equals(selectedContentType.getSubtype())) {
             // 只有返回json数据流的时候才加密，其它比如文件下载不加密
             // vnd.openxmlformats-officedocument.spreadsheetml.sheet
             return body;
@@ -91,9 +93,9 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
         try {
             out = objectMapper.writeValueAsString(body);
             // 加密
-            out = Sm2Utils.encrypt(out, publicKeyB);
+            out = sm2Utils.encryptB(out);
             // 返回给前端的密文去掉04
-            out = out.substring(2, out.length());
+            out = out.substring(2);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new ServiceException("加密失败");

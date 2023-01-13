@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
 import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizer;
@@ -64,6 +65,9 @@ public class AuthorizationServerConfiguration {
     @Resource
     private LogoutSuccessHandlerImpl logoutSuccessHandler;
 
+    @Autowired
+    private Sm4Utils sm4Utils;
+
     /**
      * PasswordEncoder
      * Auto wired passwordEncoder in AuthorizationServerConfig class;
@@ -71,7 +75,7 @@ public class AuthorizationServerConfiguration {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new SM4PasswordEncoder();
+        return new SM4PasswordEncoder(sm4Utils);
     }
 
     /**

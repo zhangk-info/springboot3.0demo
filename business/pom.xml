@@ -180,12 +180,12 @@
                             <jvmFlag>-Xmx2048m</jvmFlag>
                             <jvmFlag>-Xms512m</jvmFlag>
                         </jvmFlags>
-                        <mainClass>com.xlj.SilverApplication</mainClass>
+                        <mainClass>com.xlj.DemoApplication</mainClass>
                         <environment>
                             <TZ>Asia/Shanghai</TZ>
                         </environment>
                         <labels>
-                            <name>silver</name>
+                            <name>demo</name>
                             <version>${project.version}</version>
                         </labels>
                         <format>OCI</format>

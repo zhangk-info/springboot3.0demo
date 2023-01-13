@@ -1,8 +1,8 @@
 spring:
   application:
-    name: silver-admin
+    name: demo-admin
   datasource:
-    url: jdbc:mysql://43.153.19.82:3306/silver?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://43.153.19.82:3306/demo?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
     password: zhangkun
 

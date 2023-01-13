@@ -6,10 +6,11 @@ import com.xlj.common.entity.DataResp;
 import com.xlj.common.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -21,15 +22,39 @@ public abstract class RepeatSubmitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            HandlerMethod handlerMethod = (HandlerMethod) handler;
+        if (handler instanceof HandlerMethod handlerMethod) {
             Method method = handlerMethod.getMethod();
             RepeatSubmit annotation = method.getAnnotation(RepeatSubmit.class);
             if (annotation != null) {
                 if (this.isRepeatSubmit(request, annotation)) {
-                    DataResp ajaxResult = DataResp.error(annotation.message());
+                    DataResp<String> ajaxResult = DataResp.error(annotation.message());
                     ServletUtils.renderString(response, JSONUtil.toJsonStr(ajaxResult));
                     return false;
+                }
+            } else {
+                // 默认post提交的方法都要做重复提交限制
+                if (request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
+                    annotation = new RepeatSubmit() {
+                        @Override
+                        public Class<? extends Annotation> annotationType() {
+                            return RepeatSubmit.class;
+                        }
+
+                        @Override
+                        public int interval() {
+                            return 3;
+                        }
+
+                        @Override
+                        public String message() {
+                            return "不允许重复提交，请稍候再试";
+                        }
+                    };
+                    if (this.isRepeatSubmit(request, annotation)) {
+                        DataResp<String> ajaxResult = DataResp.error(annotation.message());
+                        ServletUtils.renderString(response, JSONUtil.toJsonStr(ajaxResult));
+                        return false;
+                    }
                 }
             }
             return true;

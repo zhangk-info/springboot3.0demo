@@ -6,13 +6,15 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
+import com.xlj.common.encrypted_transfer.Sm2EnableCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
@@ -27,16 +29,38 @@ import java.security.PublicKey;
  * @author zhangkun
  */
 @Slf4j
+@Conditional(Sm2EnableCondition.class)
 @Component
 public class Sm2Utils {
 
-    public static final String PUBLIC_KEY = "0206fa3c15ce89e7201fcb2066d0f55e1a8a1b4c52ec950401026773d0343bd85f";
-    public static final String PRIVATE_KEY = "3b4c64a9dcc33a0f9bb590e189966c4b65429c25f2b798933e6073b075ebf78e";
 
-    @Bean
-    public static SM2 sm2() {
+    private final SM2 sm2A;
+    private final SM2 sm2B;
+    @Value("${sm2.private-key-a}")
+    private String privateKeyA;
+    @Value("${sm2.public-key-a}")
+    private String publicKeyA;
+    @Value("${sm2.private-key-b}")
+    private String privateKeyB;
+    @Value("${sm2.public-key-b}")
+    private String publicKeyB;
+
+    public Sm2Utils() {
+        this.sm2A = sm2A();
+        this.sm2B = sm2B();
+    }
+
+    public SM2 sm2A() {
         //提取公钥点
-        SM2 sm2 = new SM2(PRIVATE_KEY, PUBLIC_KEY);
+        SM2 sm2 = new SM2(privateKeyA, publicKeyA);
+        SM2Engine.Mode mode = SM2Engine.Mode.C1C3C2;
+        sm2.setMode(mode);
+        return sm2;
+    }
+
+    public SM2 sm2B() {
+        //提取公钥点
+        SM2 sm2 = new SM2(privateKeyB, publicKeyB);
         SM2Engine.Mode mode = SM2Engine.Mode.C1C3C2;
         sm2.setMode(mode);
         return sm2;
@@ -49,10 +73,9 @@ public class Sm2Utils {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String str) throws Exception {
+    public String decryptA(String str) throws Exception {
         try {
-            SM2 sm2 = sm2();
-            return sm2.decryptStr(str, KeyType.PrivateKey);
+            return sm2A.decryptStr(str, KeyType.PrivateKey);
         } catch (Exception e) {
             return null;
         }
@@ -65,9 +88,8 @@ public class Sm2Utils {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String str) throws Exception {
-        SM2 sm2 = sm2();
-        return sm2.encryptHex(str, KeyType.PublicKey);
+    public String encryptA(String str) throws Exception {
+        return sm2A.encryptHex(str, KeyType.PublicKey);
     }
 
     /**
@@ -77,7 +99,33 @@ public class Sm2Utils {
      * @return
      * @throws Exception
      */
-    public static String decrypt(String str, String privateKeyStr) throws Exception {
+    public String decryptB(String str) throws Exception {
+        try {
+            return sm2B.decryptStr(str, KeyType.PrivateKey);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 加密
+     *
+     * @param str
+     * @return
+     * @throws Exception
+     */
+    public String encryptB(String str) throws Exception {
+        return sm2B.encryptHex(str, KeyType.PublicKey);
+    }
+
+    /**
+     * 解密
+     *
+     * @param str
+     * @return
+     * @throws Exception
+     */
+    public String decrypt(String str, String privateKeyStr) throws Exception {
         try {
             ECPrivateKeyParameters privateKeyParams = BCUtil.toSm2Params(privateKeyStr);
             SM2 sm2 = new SM2(privateKeyParams, null);
@@ -96,7 +144,7 @@ public class Sm2Utils {
      * @return
      * @throws Exception
      */
-    public static String encrypt(String str, String publicKeyStr) throws Exception {
+    public String encrypt(String str, String publicKeyStr) throws Exception {
         //提取公钥点
         PublicKey publicKey = BCUtil.decodeECPoint(publicKeyStr, "sm2p256v1");
         SM2 sm2 = new SM2(null, publicKey);
@@ -111,9 +159,9 @@ public class Sm2Utils {
     @Test
     public void testEncodeAndDecode() {
         try {
-            String encodeStr = encrypt("123456");
+            String encodeStr = encryptA("123456");
             System.out.println(encodeStr);
-            System.out.println(decrypt(encodeStr));
+            System.out.println(decryptA(encodeStr));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

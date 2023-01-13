@@ -3,7 +3,6 @@ package com.xlj.system.service.impl;
 import com.xlj.common.annotation.DataScope;
 import com.xlj.common.context.UserContext;
 import com.xlj.common.exception.ServiceException;
-import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.common.spring.SpringUtils;
 import com.xlj.system.constant.UserConstants;
 import com.xlj.system.domain.entity.SysPost;
@@ -24,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -55,6 +55,8 @@ public class SysUserServiceImpl implements ISysUserService {
     private SysUserPostMapper userPostMapper;
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 根据条件分页查询用户列表
@@ -450,7 +452,7 @@ public class SysUserServiceImpl implements ISysUserService {
                 SysUser u = userMapper.selectUserByUserName(user.getUserName());
                 if (Objects.isNull(u)) {
                     BeanValidators.validateWithException(validator, user);
-                    user.setPassword(Sm4Utils.encrypt(password));
+                    user.setPassword(passwordEncoder.encode(password));
                     user.setCreateBy(operName);
                     this.insertUser(user);
                     successNum++;

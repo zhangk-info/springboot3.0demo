@@ -1,7 +1,6 @@
 package com.xlj.framework.configuration.webmvc;
 
 import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
-import com.xlj.framework.interceptor.impl.SameUrlDataInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;

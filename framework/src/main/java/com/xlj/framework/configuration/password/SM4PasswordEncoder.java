@@ -10,6 +10,7 @@ import java.util.Objects;
 
 /**
  * SM4加密
+ *
  * @author zhangkun
  */
 @Slf4j
@@ -19,16 +20,17 @@ public class SM4PasswordEncoder implements PasswordEncoder {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public static void main(String[] args) throws Exception {
-        System.out.println(Sm4Utils.encrypt("123456"));
-//        System.out.println(Sm4Utils.decrypt("A57364A1E93435A6E3AC0ED55199E9EB"));
+    private Sm4Utils sm4Utils;
+
+    public SM4PasswordEncoder(Sm4Utils sm4Utils) {
+        this.sm4Utils = sm4Utils;
     }
 
     @Override
     public String encode(CharSequence rawPassword) {
         if (rawPassword != null) {
             try {
-                return Sm4Utils.encrypt(rawPassword.toString());
+                return sm4Utils.encrypt(rawPassword.toString());
             } catch (Exception e) {
                 log.error("加密失败");
                 return rawPassword.toString();

@@ -7,6 +7,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,18 +28,20 @@ import java.util.Objects;
  * OncePerRequestFilter
  * 处理GET请求参数加密传输
  * 对GET请求的加密参数data进行解密后封装成 Map<String, String[]> 传入自定已的DecryptRequestWrapper
- * 服务中配置方法 {@link CipherConfig})
+ *
  * @author zhangkun
  */
+@Component
+@Conditional(Sm2EnableCondition.class)
 public class MyRequestFilter extends OncePerRequestFilter {
 
-    private final String privateKeyA;
+    private final Sm2Utils sm2Utils;
+    @Value("${sm2.uri.ignores:}")
+    private List<String> ignoreUris;
 
-    private final List<String> ignoreUris;
-
-    public MyRequestFilter(String privateKeyA, List<String> ignoreUris) {
-        this.privateKeyA = privateKeyA;
-        this.ignoreUris = ignoreUris;
+    @Autowired
+    public MyRequestFilter(Sm2Utils sm2Utils) {
+        this.sm2Utils = sm2Utils;
     }
 
     @Override
@@ -63,7 +69,7 @@ public class MyRequestFilter extends OncePerRequestFilter {
             enCodeStr = "04" + enCodeStr;
             //  解密
             try {
-                deCodeStr = Sm2Utils.decrypt(enCodeStr, privateKeyA);
+                deCodeStr = sm2Utils.decryptA(enCodeStr);
             } catch (Exception e) {
                 throw new ServiceException("解密失败");
             }

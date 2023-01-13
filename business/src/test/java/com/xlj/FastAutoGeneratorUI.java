@@ -27,7 +27,7 @@ public class FastAutoGeneratorUI {
                 .globalConfig(builder -> {
                     builder.author("zhangkun") // 设置作者
                             .enableSpringdoc() // 开启 swagger 模式
-                            .outputDir("C:\\workspace\\silver-admin\\silver\\src\\test\\java"); // 指定输出目录
+                            .outputDir("C:\\workspace\\springboot3.0demo\\business\\src\\test\\java"); // 指定输出目录
                 })
                 .templateConfig(builder -> {
                     builder.disable(TemplateType.ENTITY)
@@ -41,7 +41,7 @@ public class FastAutoGeneratorUI {
                     builder
                             .parent("ui") // 设置父包名
                             .moduleName("") // 设置父包模块名
-                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C:\\workspace\\silver-admin\\silver\\src\\test\\java\\mapper")); // 设置mapperXml生成路径
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C:\\workspace\\springboot3.0demo\\business\\src\\test\\java\\mapper")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
                     // 配置文件可覆盖

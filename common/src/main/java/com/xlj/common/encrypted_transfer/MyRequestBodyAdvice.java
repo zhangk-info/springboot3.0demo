@@ -5,6 +5,7 @@ import com.xlj.common.sgcc.Sm2Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -30,7 +31,6 @@ import java.util.Objects;
  * 密文传输
  * RequestBodyAdvice
  * 对于BODY类型加密传输的解密
- * 服务中配置方法 {@see CipherConfig})
  * <p>
  * fix bug : @ControllerAdvice里面包含了@Component，所以该类会自动注入
  * 使用@Conditional(Sm2EnableCondtion.class)
@@ -54,12 +54,12 @@ import java.util.Objects;
 @Slf4j
 public class MyRequestBodyAdvice implements RequestBodyAdvice {
 
-    private final String privateKeyA;
-    private final List<String> ignoreUris;
+    private final Sm2Utils sm2Utils;
+    @Value("${sm2.uri.ignores:}")
+    private List<String> ignoreUris;
 
-    public MyRequestBodyAdvice(String privateKeyA, List<String> ignoreUris) {
-        this.privateKeyA = privateKeyA;
-        this.ignoreUris = ignoreUris;
+    public MyRequestBodyAdvice(Sm2Utils sm2Utils) {
+        this.sm2Utils = sm2Utils;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class MyRequestBodyAdvice implements RequestBodyAdvice {
                 String deCodeStr = "";
                 //  解密
                 try {
-                    deCodeStr = deCodeStr = Sm2Utils.decrypt(enCodeStr, privateKeyA);
+                    deCodeStr = deCodeStr = sm2Utils.decryptA(enCodeStr);
                 } catch (Exception e) {
                     throw new ServiceException("解密失败");
                 }

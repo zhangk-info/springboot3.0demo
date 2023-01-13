@@ -35,8 +35,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
     @Override
     public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation) {
         String nowParams = "";
-        if (request instanceof RepeatedlyRequestWrapper) {
-            RepeatedlyRequestWrapper repeatedlyRequest = (RepeatedlyRequestWrapper) request;
+        if (request instanceof RepeatedlyRequestWrapper repeatedlyRequest) {
             nowParams = HttpHelper.getBodyString(repeatedlyRequest);
         }
 
@@ -67,9 +66,9 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
                 }
             }
         }
-        Map<String, Object> cacheMap = new HashMap<String, Object>(4);
+        Map<String, Object> cacheMap = new HashMap<>(2, 1);
         cacheMap.put(url, nowDataMap);
-        redisCache.set(cacheRepeatKey, cacheMap, annotation.interval() * 60L);
+        redisCache.set(cacheRepeatKey, cacheMap, annotation.interval());
         return false;
     }
 
