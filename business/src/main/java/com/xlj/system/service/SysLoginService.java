@@ -79,7 +79,7 @@ public class SysLoginService {
         Map<String, Object> loginParams = new HashMap<>();
         loginParams.put("grant_type", "password");
         loginParams.put("username", "{\"username\":\"" + username + "\"}");
-        loginParams.put("password", 123456);
+        loginParams.put("password", password);
         loginParams.put("client_id", "password");
         loginParams.put("client_secret", "xinglianjing");
         StringBuilder cookieStr = new StringBuilder(StringUtils.EMPTY);
