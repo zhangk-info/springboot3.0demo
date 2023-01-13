@@ -1,8 +1,10 @@
 package com.xlj.framework.configuration.webmvc;
 
+import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
 import com.xlj.framework.interceptor.impl.SameUrlDataInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,7 +20,8 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
 
 
     @Autowired
-    private SameUrlDataInterceptor sameUrlDataInterceptor;
+    @Lazy
+    private RepeatSubmitInterceptor repeatSubmitInterceptor;
 
     /**
      * 配置静态资源处理的两种方式，两种方式任选其一
@@ -63,7 +66,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(sameUrlDataInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
     }
 
 }
