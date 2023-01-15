@@ -116,8 +116,8 @@ public class ${table.controllerName} {
     @GetMapping("check")
     @Operation(summary = "重复检查", description = "重复检查")
     DataResp<Boolean> check(@Parameter(description = "编辑时的主键") Long id,
-                            @Parameter(description = "查询重复的字段") String field,
-                            @Parameter(description = "值") String value) {
+                            @Parameter(description = "查询重复的字段") @RequestParam(required = true) String field,
+                            @Parameter(description = "值") @RequestParam(required = true) String value) {
         return DataResp.success(${entity?uncap_first}Service.check(id, field, value));
     }
 }
