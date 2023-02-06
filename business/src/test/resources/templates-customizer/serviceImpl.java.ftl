@@ -6,6 +6,8 @@ import ${package.Service}.${table.serviceName};
 import ${superServiceImplClassPackage};
 import org.springframework.stereotype.Service;
 import cn.hutool.core.bean.BeanUtil;
+import com.xlj.common.exception.ErrorCode;
+import com.xlj.common.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -62,6 +64,9 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
             ${entity?uncap_first} = new ${entity}();
         } else {
             ${entity?uncap_first} = this.getById(${entity?uncap_first}DTO.getId());
+            if (Objects.isNull(${entity?uncap_first})) {
+                throw new ServiceException(ErrorCode.DATA_NOT_EXIST);
+            }
         }
         // 复制
         BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity?uncap_first});
