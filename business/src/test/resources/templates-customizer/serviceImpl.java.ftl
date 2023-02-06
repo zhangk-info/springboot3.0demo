@@ -6,6 +6,7 @@ import ${package.Service}.${table.serviceName};
 import ${superServiceImplClassPackage};
 import org.springframework.stereotype.Service;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import com.xlj.common.exception.ErrorCode;
 import com.xlj.common.exception.ServiceException;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -69,7 +70,7 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
             }
         }
         // 复制
-        BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity?uncap_first});
+        BeanUtil.copyProperties(${entity?uncap_first}DTO, ${entity?uncap_first}, new CopyOptions().ignoreNullValue());
         // 保存或更新
         this.saveOrUpdate(${entity?uncap_first});
         // 转换为VO并返回
