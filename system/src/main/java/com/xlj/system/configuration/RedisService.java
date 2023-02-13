@@ -117,6 +117,7 @@ public class RedisService {
 
     /**
      * 通过pattern获取keys
+     *
      * @param pattern
      * @return
      */
@@ -260,8 +261,9 @@ public class RedisService {
      * @param value 值
      * @return
      */
-    public boolean lSet(String key, Object value) {
+    public boolean lSet(String key, List value) {
         try {
+            this.del(key);
             redisTemplate.opsForList().rightPushIfPresent(key, value);
             return true;
         } catch (Exception e) {
