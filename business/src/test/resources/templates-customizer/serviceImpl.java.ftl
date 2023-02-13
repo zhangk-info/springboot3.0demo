@@ -114,7 +114,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<${table.m
      */
     @Override
     public ${entity}VO getVoById(Long id) {
-        return convertVo(getById(id));
+        ${entity} entity = getById(id);
+        if (Objects.isNull(entity)) {
+            throw new ServiceException(ErrorCode.DATA_NOT_EXIST);
+        }
+        return convertVo(entity);
     }
 
     /**
