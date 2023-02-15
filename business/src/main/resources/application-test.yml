@@ -15,6 +15,14 @@ spring:
       database: 11
       timeout: 5000
 
+  redis:
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://81.68.104.177:6379"
+          database: 10
+          password: test
+
 logging:
   level:
     root: error
