@@ -31,7 +31,7 @@ public class TopicTest {
             Config config = new Config();
             config.useSingleServer().setAddress("redis://81.68.104.177:6379").setDatabase(10).setPassword("test");
             redisson = Redisson.create(config);
-//            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+//            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(REDIS_TOPIC_MQ);
             RTopic topic = Redisson.create(redisson.getConfig()).getTopic(REDIS_TOPIC_MQ);
             RedissonClient finalRedisson = redisson;
             topic.addListener(User.class, (charSequence, obj) -> {
@@ -68,7 +68,7 @@ public class TopicTest {
             Config config = new Config();
             config.useSingleServer().setAddress("redis://81.68.104.177:6379").setDatabase(10).setPassword("test");
             redisson = Redisson.create(config);
-//            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+//            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(REDIS_TOPIC_MQ);
             RTopic topic = Redisson.create(redisson.getConfig()).getTopic(REDIS_TOPIC_MQ);
             RedissonClient finalRedisson = redisson;
             topic.addListener(User.class, (charSequence, obj) -> {
@@ -106,7 +106,7 @@ public class TopicTest {
 
             redisson = Redisson.create(config);
 
-//            RTopic topic1 = redisson.getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+//            RTopic topic1 = redisson.getShardedTopic(REDIS_TOPIC_MQ);
             RTopic topic1 = redisson.getTopic(REDIS_TOPIC_MQ);
             for (int i = 0; i < 100; i++) {
                 User user = new User();

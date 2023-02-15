@@ -24,7 +24,7 @@ public class TopicService {
 
     public void send(User msg) {
         if (Objects.nonNull(msg)) {
-//            RTopic topic = redissonClient.getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+//            RTopic topic = redissonClient.getShardedTopic(REDIS_TOPIC_MQ);
             RTopic topic = redissonClient.getTopic(REDIS_TOPIC_MQ);
             topic.publishAsync(msg);
         }
