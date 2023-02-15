@@ -1,6 +1,5 @@
 package com.xlj.mq;
 
-import com.xlj.common.constants.CacheConstants;
 import com.xlj.user.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class TopicTest {
 
+    private static final String REDIS_TOPIC_MQ = "redis_topic_mq";
 
     @Test
     public void testTopic() {
@@ -32,10 +32,10 @@ public class TopicTest {
             config.useSingleServer().setAddress("redis://81.68.104.177:6379").setDatabase(10).setPassword("test");
             redisson = Redisson.create(config);
 //            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
-            RTopic topic = Redisson.create(redisson.getConfig()).getTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+            RTopic topic = Redisson.create(redisson.getConfig()).getTopic(REDIS_TOPIC_MQ);
             RedissonClient finalRedisson = redisson;
             topic.addListener(User.class, (charSequence, obj) -> {
-                RLock lock = finalRedisson.getLock(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC + obj.getId());
+                RLock lock = finalRedisson.getLock(REDIS_TOPIC_MQ + obj.getId());
                 try {
                     boolean res = lock.tryLock(0, 3, TimeUnit.SECONDS);
                     if (res) {
@@ -69,10 +69,10 @@ public class TopicTest {
             config.useSingleServer().setAddress("redis://81.68.104.177:6379").setDatabase(10).setPassword("test");
             redisson = Redisson.create(config);
 //            RTopic topic = Redisson.create(redisson.getConfig()).getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
-            RTopic topic = Redisson.create(redisson.getConfig()).getTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+            RTopic topic = Redisson.create(redisson.getConfig()).getTopic(REDIS_TOPIC_MQ);
             RedissonClient finalRedisson = redisson;
             topic.addListener(User.class, (charSequence, obj) -> {
-                RLock lock = finalRedisson.getLock(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC + obj.getId());
+                RLock lock = finalRedisson.getLock(REDIS_TOPIC_MQ + obj.getId());
                 try {
                     boolean res = lock.tryLock(0, 3, TimeUnit.SECONDS);
                     if (res) {
@@ -107,7 +107,7 @@ public class TopicTest {
             redisson = Redisson.create(config);
 
 //            RTopic topic1 = redisson.getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
-            RTopic topic1 = redisson.getTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+            RTopic topic1 = redisson.getTopic(REDIS_TOPIC_MQ);
             for (int i = 0; i < 100; i++) {
                 User user = new User();
                 user.setId(Long.parseLong(i + ""));

@@ -1,6 +1,5 @@
 package com.xlj.framework.mq;
 
-import com.xlj.common.constants.CacheConstants;
 import com.xlj.user.entity.User;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
@@ -18,13 +17,15 @@ import java.util.Objects;
 @Service
 public class TopicService {
 
+    private static final String REDIS_TOPIC_MQ = "redis_topic_mq";
+
     @Autowired
     private RedissonClient redissonClient;
 
     public void send(User msg) {
         if (Objects.nonNull(msg)) {
 //            RTopic topic = redissonClient.getShardedTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
-            RTopic topic = redissonClient.getTopic(CacheConstants.MINI_PROGRAM_MSG_SEND_TOPIC);
+            RTopic topic = redissonClient.getTopic(REDIS_TOPIC_MQ);
             topic.publishAsync(msg);
         }
     }
