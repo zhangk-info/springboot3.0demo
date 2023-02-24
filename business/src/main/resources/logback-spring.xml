@@ -11,8 +11,42 @@
         </encoder>
     </appender>
 
+    <appender name="fileOfInfo" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <file>${logging.path}/silver-admin.%d{yyyy-MM-dd}.log</file>
+            <MaxHistory>90</MaxHistory>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="fileOfError" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <file>${logging.path}/silver-admin-error.%d{yyyy-MM-dd}.log</file>
+            <MaxHistory>90</MaxHistory>
+        </rollingPolicy>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <root level="info">
-        <appender-ref ref="consoleLog" />
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="fileOfError"/>
+        <appender-ref ref="fileOfInfo"/>
     </root>
 
 </configuration>
