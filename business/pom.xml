@@ -195,15 +195,15 @@
                     <allowInsecureRegistries>true</allowInsecureRegistries>
                     <!-- 运行方式： * 跳过测试并http方式跳过证书认证 mvn compile jib:build -D maven.test.skip=true -D sendCredentialsOverHttp=true -->
                 </configuration>
-                <!--                <executions>-->
-                <!--                    <execution>-->
-                <!--                        &lt;!&ndash; 将jib与mvn构建的生命周期package绑定 &ndash;&gt;-->
-                <!--                        <phase>package</phase>-->
-                <!--                        <goals>-->
-                <!--                            <goal>build</goal>-->
-                <!--                        </goals>-->
-                <!--                    </execution>-->
-                <!--                </executions>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        &lt;!&ndash; 将jib与mvn构建的生命周期package绑定 &ndash;&gt;-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>build</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
             </plugin>
         </plugins>
     </build>
