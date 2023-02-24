@@ -1,4 +1,7 @@
 <configuration>
+
+    <property name="logging.path" value="/var/log"/>
+
     <!-- 配置控制台的输出日志 -->
     <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
