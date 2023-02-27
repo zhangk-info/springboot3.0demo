@@ -165,7 +165,7 @@
                 <version>1.8.0</version>
                 <configuration>
                     <from>
-                        <image>openjdk:alpine</image>
+                        <image>openjdk:17-alpine</image>
                     </from>
                     <to>
                         <!-- 这里一定要用repository中配置的http端口，否则会使用v2 -->
@@ -178,6 +178,7 @@
                     <container>
                         <jvmFlags>
                             <jvmFlag>-D logging.level.root=error</jvmFlag>
+                            <jvmFlag>-D server.port=80</jvmFlag>
                             <jvmFlag>-Xmx2048m</jvmFlag>
                             <jvmFlag>-Xms512m</jvmFlag>
                         </jvmFlags>
