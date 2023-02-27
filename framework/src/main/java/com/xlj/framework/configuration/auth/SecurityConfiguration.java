@@ -107,7 +107,8 @@ public class SecurityConfiguration {
                 )
 //                .formLogin(form -> form.loginPage("/login").failureUrl("/login-error").permitAll())
                 .csrf()/*.ignoringRequestMatchers(PathRequest.toH2Console())*/
-                .and().headers().frameOptions().sameOrigin()
+                .and().cors()
+//                .and().headers().frameOptions().sameOrigin()
                 .and()
                 .apply(federatedIdentityConfigurer)
                 .and()
