@@ -57,6 +57,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .allowedOriginPatterns("*")
                 .allowCredentials(false)
                 .allowedMethods("*")
+                .allowedHeaders("*")
                 .maxAge(3600);
     }
 
