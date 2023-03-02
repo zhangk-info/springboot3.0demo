@@ -2,7 +2,7 @@ package com.xlj.job;
 
 import cn.hutool.core.date.DateUtil;
 import com.xlj.DemoApplication;
-import com.xlj.scheduler.task.JobDemo;
+import com.xlj.scheduler.demo.JobDemo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
