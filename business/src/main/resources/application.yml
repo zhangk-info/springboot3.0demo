@@ -78,6 +78,35 @@ spring:
 #          - 192.168.200.30:16380
 #          - 192.168.200.30:16381
 
+  quartz:
+    auto-startup: true
+    # 启动之后延迟1秒启动定时任务 默认0s
+    startup-delay: 1
+    scheduler-name: silverScheduler
+    # 数据库方式
+    job-store-type: jdbc
+    # Database schema initialization mode.
+    jdbc:
+      # 初始化数据库
+      initialize-schema: ALWAYS
+      schema: classpath:org/quartz/impl/jdbcjobstore/tables_@@platform@@.sql
+    # 覆盖已存在的jobs
+    overwrite-existing-jobs: true
+    # 关闭的时候等待工作执行完成
+    wait-for-jobs-to-complete-on-shutdown: false
+    # 相关属性配置
+    properties:
+      org:
+        quartz:
+          scheduler:
+            #            instanceName: clusteredScheduler
+            instanceId: AUTO
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
+
 logging:
   level:
     root: info

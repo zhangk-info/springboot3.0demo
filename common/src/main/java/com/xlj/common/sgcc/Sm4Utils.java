@@ -11,7 +11,6 @@ import org.springframework.util.Base64Utils;
  *
  * @author zhangkun
  */
-@Component
 public class Sm4Utils {
 
     public static final String KEY = "gdMfxJAPzBItGBxo724Byg==";

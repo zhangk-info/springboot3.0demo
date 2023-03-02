@@ -26,16 +26,16 @@ create table sys_dept (
 -- 初始化-部门表数据
 -- ----------------------------
 insert into sys_dept values
-(100,  0,   '0',          '星联金',   0, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(101,  100, '0,100',      '深圳总公司', 1, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(102,  100, '0,100',      '长沙分公司', 2, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(103,  101, '0,100,101',  '研发部门',   1, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(104,  101, '0,100,101',  '市场部门',   2, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(105,  101, '0,100,101',  '测试部门',   3, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(106,  101, '0,100,101',  '财务部门',   4, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(107,  101, '0,100,101',  '运维部门',   5, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(108,  102, '0,100,102',  '市场部门',   1, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
-,(109,  102, '0,100,102',  '财务部门',   2, '星联金', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate());
+(100,  0,   '0',          'xx公司',   0, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(101,  100, '0,100',      '深圳总公司', 1, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(102,  100, '0,100',      '长沙分公司', 2, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(103,  101, '0,100,101',  '研发部门',   1, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(104,  101, '0,100,101',  '市场部门',   2, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(105,  101, '0,100,101',  '测试部门',   3, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(106,  101, '0,100,101',  '财务部门',   4, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(107,  101, '0,100,101',  '运维部门',   5, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(108,  102, '0,100,102',  '市场部门',   1, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate())
+,(109,  102, '0,100,102',  '财务部门',   2, 'xx公司', '15888888888', 'test@email.com', '0', '0', 1, sysdate(), null, sysdate(), null, sysdate());
 
 
 -- ----------------------------
@@ -71,8 +71,8 @@ create table sys_user (
 -- 初始化-用户信息表数据
 -- ----------------------------
 insert into sys_user values
-(1,  null, 100, 'admin', '超级管理员', '00', 'test@email.com', '18990442158', '1', '', 'f1c830a6ccac94c973bf51afa4cb5423', '0', '0', '127.0.0.1', sysdate(), 1, sysdate(), null, null, null, null),
-(2,  1, 103, 'storeAdmin',    '星联金', '00', 'test@email.com',  '18990442158', '1', '', 'f1c830a6ccac94c973bf51afa4cb5423', '0', '0', '127.0.0.1', sysdate(), 1, sysdate(), null, null, null, null);
+(1,  null, 100, 'admin', '超级管理员', '00', 'test@email.com', '13628344382', '1', '', 'f1c830a6ccac94c973bf51afa4cb5423', '0', '0', '127.0.0.1', sysdate(), 1, sysdate(), null, null, null, null),
+(2,  1, 103, 'storeAdmin',    'xx公司', '00', 'test@email.com',  '13628344382', '1', '', 'f1c830a6ccac94c973bf51afa4cb5423', '0', '0', '127.0.0.1', sysdate(), 1, sysdate(), null, null, null, null);
 
 
 -- ----------------------------
@@ -546,6 +546,6 @@ create table sys_notice (
 -- 初始化-公告信息表数据
 -- ----------------------------
 insert into sys_notice values
-('1', '温馨提醒：2018-07-01 星联金新版本发布啦', '2', '新版本内容', '0', 1, sysdate(), null, null, null, null),
-('2', '维护通知：2018-07-01 星联金系统凌晨维护', '1', '维护内容',   '0', 1, sysdate(), null, null, null, null);
+('1', '温馨提醒：2018-07-01 xx公司新版本发布啦', '2', '新版本内容', '0', 1, sysdate(), null, null, null, null),
+('2', '维护通知：2018-07-01 xx公司系统凌晨维护', '1', '维护内容',   '0', 1, sysdate(), null, null, null, null);
 

@@ -30,7 +30,6 @@ import java.security.PublicKey;
  */
 @Slf4j
 @Conditional(Sm2EnableCondition.class)
-@Component
 public class Sm2Utils {
 
 

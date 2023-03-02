@@ -34,4 +34,4 @@ CREATE TABLE `user`  (
 
 -- 插入一条默认数据用于测试
 INSERT INTO `user` (id, `openid`, `mobile`, `password`, `username`, `nickname`, `cover_url`, `company_name`, `province_id`, `province`, `city_id`, `city`, `district_id`, `district`, `create_at`, `update_at`, `delete_at`, `is_delete`, `last_store_id`, `balance`, `address`) VALUES
-(1, '', '18990442158', 'f1c830a6ccac94c973bf51afa4cb5423', NULL, '', 'https://zhubao-xinglianjin.oss-cn-chengdu.aliyuncs.com/site/20221227/cMxS70FTyBJaerqkzxaa0yz8f7h8M8OFO3dCAJ8J.png', '光合首饰', 110000, '北京市', 110100, '北京城区', 110106, '丰台区', '2022-10-26 11:41:47', '2022-12-27 17:19:18', '2022-10-26 11:41:47', 0, 1, 140.00, '梨花街88号0');
+(1, '', '13628344382', 'f1c830a6ccac94c973bf51afa4cb5423', NULL, '', 'https://zhubao-xinglianjin.oss-cn-chengdu.aliyuncs.com/site/20221227/cMxS70FTyBJaerqkzxaa0yz8f7h8M8OFO3dCAJ8J.png', '光合首饰', 110000, '北京市', 110100, '北京城区', 110106, '丰台区', '2022-10-26 11:41:47', '2022-12-27 17:19:18', '2022-10-26 11:41:47', 0, 1, 140.00, '梨花街88号0');

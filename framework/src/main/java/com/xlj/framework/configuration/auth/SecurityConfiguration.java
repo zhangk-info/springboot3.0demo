@@ -78,7 +78,6 @@ public class SecurityConfiguration {
                 .build();
     }
 
-
     /**
      * 放开认证的路径
      *

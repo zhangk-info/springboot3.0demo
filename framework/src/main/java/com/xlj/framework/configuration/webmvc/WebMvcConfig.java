@@ -38,7 +38,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         /** 配置knife4j 显示文档 */
         registry.addResourceHandler("doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
-
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**")
