@@ -18,11 +18,11 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
-        <file>${logging.path}/silver-admin.log</file>
+        <file>${logging.path}/business.log</file>
         <!--滚动策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--路径-->
-            <file>${logging.path}/silver-admin.%d{yyyy-MM-dd}.log</file>
+            <file>${logging.path}/business.%d{yyyy-MM-dd}.log</file>
             <MaxHistory>90</MaxHistory>
         </rollingPolicy>
         <append>true</append>
@@ -35,11 +35,11 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
         </filter>
-        <file>${logging.path}/silver-admin-error.log</file>
+        <file>${logging.path}/business-error.log</file>
         <!--滚动策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--路径-->
-            <file>${logging.path}/silver-admin-error.%d{yyyy-MM-dd}.log</file>
+            <file>${logging.path}/business-error.%d{yyyy-MM-dd}.log</file>
             <MaxHistory>90</MaxHistory>
         </rollingPolicy>
         <append>true</append>

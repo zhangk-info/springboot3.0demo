@@ -29,3 +29,24 @@ swagger2	        OpenAPI 3	                        注解位置
 @ApiModel	        @Schema	                            DTO类上
 @ApiModelProperty	@Schema	                            DTO属性上
 ```
+
+
+
+#### jib
+* 跳过测试并http方式跳过证书认证
+  mvn clean compile jib:build -D maven.test.skip=true -D sendCredentialsOverHttp=true
+
+#### 构建过程
+1. mvn clean
+2. mvn clean install -D maven.test.skip=true
+3. mvn compile jib:build -D maven.test.skip=true -D sendCredentialsOverHttp=true -pl business
+
+#### 打包
+1. mvn clean
+2. mvn clean install -D maven.test.skip=true
+3. mvn package -DskipTests -pl demo
+
+
+
+#### 测试环境数据库
+docker run -p 33306:3306 --name mariadb-db -v /data/mysql/db/conf/:/etc/mysql/conf.d/ -v /data/mysql/db/logs:/var/log/mysql -v /data/mysql/db/data:/var/lib/mysql --restart=always --privileged=true -e MYSQL_ROOT_PASSWORD=RlcGFy36 -d mariadb:latest

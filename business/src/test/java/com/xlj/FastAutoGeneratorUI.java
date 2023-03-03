@@ -22,7 +22,7 @@ public class FastAutoGeneratorUI {
      * 执行 run
      */
     public static void main(String[] args) throws SQLException {
-        FastAutoGenerator.create("jdbc:mysql://43.153.19.82:3306/silver?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai",
+        FastAutoGenerator.create("jdbc:mysql://43.153.19.82:3306/demo?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai",
                         "root", "zhangkun..123")
                 .globalConfig(builder -> {
                     builder.author("zhangkun") // 设置作者
