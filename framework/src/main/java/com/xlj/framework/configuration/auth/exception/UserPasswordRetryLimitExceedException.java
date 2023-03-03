@@ -12,6 +12,6 @@ public class UserPasswordRetryLimitExceedException extends ServiceException {
     private static final long serialVersionUID = 1L;
 
     public UserPasswordRetryLimitExceedException(int retryLimitCount, int lockTime) {
-        super(ErrorCode.valueOf(""), new Object[]{retryLimitCount, lockTime});
+        super(ErrorCode.valueOf(""), retryLimitCount, lockTime);
     }
 }

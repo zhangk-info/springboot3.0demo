@@ -133,7 +133,12 @@ public class SecurityUserDetailService implements UserDetailsService {
             throw new ServiceException("对不起，您的账号：" + username + " 已停用");
         }
 
-        validate(user);
+        try {
+            validate(user);
+        } catch (Exception e) {
+            log.info("登录用户：{} 登录失败次数超过限制.", username);
+            throw new ServiceException("对不起，您的账号：" + username + " 登录失败次数超过限制，请稍后重试");
+        }
 
         return createLoginUser(user);
     }
@@ -148,6 +153,11 @@ public class SecurityUserDetailService implements UserDetailsService {
         return CacheConstants.PWD_ERR_CNT_KEY + username;
     }
 
+    /**
+     * 登录次数限制验证
+     *
+     * @param user
+     */
     private void validate(SysUser user) {
         String username = user.getUserName();
         Integer retryCount = (Integer) redisService.get(getCacheKey(username));
