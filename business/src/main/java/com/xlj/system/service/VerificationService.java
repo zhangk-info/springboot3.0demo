@@ -28,7 +28,7 @@ public class VerificationService {
      * @return 结果
      */
     public void validate(String username, String code, String uuid) {
-        String verifyKey = CacheConstants.VERIFICATION_CODE_KEY + (StringUtils.isBlank(uuid) ? uuid : "");
+        String verifyKey = CacheConstants.VERIFICATION_CODE_KEY + (StringUtils.isNotBlank(uuid) ? uuid : "");
         String captcha = (String) redisCache.get(verifyKey);
         redisCache.del(verifyKey);
         if (captcha == null) {
