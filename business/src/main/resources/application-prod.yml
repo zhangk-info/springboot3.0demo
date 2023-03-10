@@ -28,10 +28,6 @@ logging:
     root: error
     #org.springframework: DEBUG
 
-
-
-springdoc:
-  api-docs:
-    enabled: false
-  swagger-ui:
-    enabled: false
+knife4j:
+  # 开启生产环境屏蔽 屏蔽所有Swagger的相关资源
+  production: true
