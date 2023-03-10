@@ -45,6 +45,9 @@ spring:
       connection-test-query: SELECT 1
       # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
       max-lifetime: 60000
+      # 此属性控制 HikariCP 尝试保持连接活动的频率，以防止它被数据库或网络基础设施超时。
+      # The minimum allowed value is 30000ms (30 seconds), but a value in the range of minutes is most desirable. Default: 0 (disabled)
+      keepalive-time: 30000
       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
       connection-timeout: 3000
       # 验证连接有效性的超时时间 默认是5秒，最小不能小于250毫秒
