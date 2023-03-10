@@ -33,6 +33,6 @@ public interface ${table.mapperName} extends ${superMapperClass}<${entity}> {
      * @param queryDTO 查询条件
      * @return 分页列表
      */
-    IPage<${entity}VO> findByPage(@Param("page") IPage page, @Param("query") ${entity}QueryDTO queryDTO);
+    IPage<${entity}VO> findByPage(@Param("page") IPage<${entity}VO> page, @Param("query") ${entity}QueryDTO queryDTO);
 }
 </#if>
