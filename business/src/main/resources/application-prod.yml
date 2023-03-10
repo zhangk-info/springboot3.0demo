@@ -30,3 +30,5 @@ logging:
 
 
 
+knife4j:
+  enable: false
