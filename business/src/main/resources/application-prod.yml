@@ -30,5 +30,6 @@ logging:
 
 
 
-knife4j:
-  enable: false
+springdoc:
+  swagger-ui:
+    enabled: false
