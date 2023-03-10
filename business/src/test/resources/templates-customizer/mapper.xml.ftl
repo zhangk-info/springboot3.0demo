@@ -46,7 +46,7 @@
                 ${r"<!--and (t.x like concat('%', #{query.keyWord} ,'%') or t.x like concat('%',#{query.keyWord},'%'))-->"}
             </if>
         </where>
-        <if test="query.sortName != null and query.sortName != null">
+        <if test="query.sortName != null and query.sortName != null and query.sortName != '' and query.sortName != ''">
             ${r"order by ${query.sortName} ${query.sortOrder}"}
         </if>
     </select>
