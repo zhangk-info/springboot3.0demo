@@ -49,7 +49,7 @@ import java.util.Set;
 @Slf4j
 @Order(100)
 public class CurrentUserFilter extends OncePerRequestFilter {
-    private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN,token,username,client";
+    private static final String ALLOWED_HEADERS = "Content-Type, Authorization";
     private static final String ALLOWED_METHODS = "*";
     private static final String ALLOWED_ORIGIN = "*";
     private static final String ALLOWED_EXPOSE = "*";
