@@ -33,7 +33,6 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -50,6 +49,11 @@ import java.util.Set;
 @Slf4j
 @Order(100)
 public class CurrentUserFilter extends OncePerRequestFilter {
+    private static final String ALLOWED_HEADERS = "x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN,token,username,client";
+    private static final String ALLOWED_METHODS = "*";
+    private static final String ALLOWED_ORIGIN = "*";
+    private static final String ALLOWED_EXPOSE = "*";
+    private static final String MAX_AGE = "3600";
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
     @Resource
     private UriProperties urlProperties;
@@ -84,15 +88,18 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
-        // cors处理 对于OPTIONS请求直接返回成功
-        if (CorsUtils.isCorsRequest(request)) {
-            if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
-                response.setStatus(HttpStatus.OK.value());
-                filterChain.doFilter(request, response);
-                return;
-            }
+        // cors处理 对于OPTIONS请求直接返回成功 前端对于post请求 不管有没有跨域都会发options请求
+        if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
+            response.setStatus(HttpStatus.OK.value());
+            response.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+            response.setHeader("Access-Control-Allow-Methods", ALLOWED_METHODS);
+            response.setHeader("Access-Control-Max-Age", MAX_AGE);
+            response.setHeader("Access-Control-Allow-Headers", ALLOWED_HEADERS);
+            response.setHeader("Access-Control-Expose-Headers", ALLOWED_EXPOSE);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            return;
         }
-        if (matcher(request.getRequestURI())||antPathMatcher.match("/logout", request.getRequestURI())) {
+        if (matcher(request.getRequestURI()) || antPathMatcher.match("/logout", request.getRequestURI())) {
             filterChain.doFilter(request, response);
         } else {
             try {
