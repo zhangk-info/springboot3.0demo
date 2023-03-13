@@ -28,30 +28,31 @@ spring:
     hikari:
       # 池名称
       pool-name: HikariDataSourcePool
+      # 自动提交
+      auto-commit: true
       # 连接池中允许的最小连接数。缺省值：等于maximum-pool-size
       # 此属性控制 HikariCP 尝试在池中维护的最小空闲连接数。 如果空闲连接低于这个值并且池中的总连接小于 maximumPoolSize，
       # HikariCP 将尽最大努力快速有效地添加额外的连接。 但是，为了获得最大性能和对峰值需求的响应，我们建议不要设置此值 不设置的话idle-timeout不会使用
-      # minimum-idle: 5
+      minimum-idle: 10
       # 连接池中允许的最大连接数。缺省值：10
-      maximum-pool-size: 2
-      # 自动提交
-      auto-commit: true
+      maximum-pool-size: 30
       # 最大闲置时长：一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟 600000
       # 此属性控制允许连接在池中闲置的最长时间。 此设置仅在 minimumIdle 定义为小于 maximumPoolSize 时适用。
       # 一旦池达到 minimumIdle 连接数，空闲连接将不会被淘汰。 连接是否因空闲而退出取决于最大 30 秒的变化，平均变化 15 秒。 在此超时之前，连接永远不会因空闲而退出。
       # 值为 0 表示永远不会从池中删除空闲连接。
-      # idle-timeout: 55000
+      idle-timeout: 200000
       # 数据库连接测试语句
       connection-test-query: SELECT 1
       # 一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒 最少30000ms
-      max-lifetime: 60000
+      max-lifetime: 300000
       # 此属性控制 HikariCP 尝试保持连接活动的频率，以防止它被数据库或网络基础设施超时。
       # The minimum allowed value is 30000ms (30 seconds), but a value in the range of minutes is most desirable. Default: 0 (disabled)
-      keepalive-time: 30000
-      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest acceptable connection timeout is 250 ms. Default: 30000 (30 seconds)
-      connection-timeout: 3000
+      keepalive-time: 40000
+      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException；Lowest 250 ms. Default: 30000 (30 seconds)
+      connection-timeout: 1000
       # 验证连接有效性的超时时间 默认是5秒，最小不能小于250毫秒
       validation-timeout: 250
+
   # Flyway 配置
   flyway:
     enabled: true
