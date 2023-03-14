@@ -92,6 +92,13 @@ public class SecurityConfiguration {
                 .requestMatchers("/webjars/**", "/image/**");
     }
 
+    /**
+     * 这个是在客户端定义的
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         LOGGER.debug("in configure HttpSecurity");
@@ -99,12 +106,10 @@ public class SecurityConfiguration {
         FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer().oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
 
         http.authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests/*.requestMatchers(EndpointRequest.toAnyEndpoint(), PathRequest.toH2Console())
-                                .permitAll()*/
+                        authorizeRequests -> authorizeRequests
                                 .anyRequest()
                                 .authenticated()
                 )
-//                .formLogin(form -> form.loginPage("/login").failureUrl("/login-error").permitAll())
                 .csrf()/*.ignoringRequestMatchers(PathRequest.toH2Console())*/
                 .and().cors()
 //                .and().headers().frameOptions().sameOrigin()

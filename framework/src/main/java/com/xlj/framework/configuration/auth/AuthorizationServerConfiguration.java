@@ -117,17 +117,18 @@ public class AuthorizationServerConfiguration {
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
-                .securityMatcher(endpointsMatcher)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .cors()
+                .and()
+                .csrf().disable()
+                .rememberMe()
+                .and()
                 .apply(authorizationServerConfigurer)
                 .and()
                 .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(entryPointCustomizer
-                                /*new LoginUrlAuthenticationEntryPoint("/login")*/)
+                        .authenticationEntryPoint(entryPointCustomizer)
                 );
-//                .and()
-//                .apply(new FederatedIdentityConfigurer());
+
         http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
