@@ -163,9 +163,22 @@ public class RedisService {
      * @return true成功 false 失败
      */
     public boolean set(String key, Object value, long time) {
+        return this.set(key, value, time, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 普通缓存放入并设置时间
+     *
+     * @param key      键
+     * @param value    值
+     * @param time     时间 time要大于0 如果time小于等于0 将设置无限期
+     * @param timeUnit 时间单位
+     * @return true成功 false 失败
+     */
+    public boolean set(String key, Object value, long time, TimeUnit timeUnit) {
         try {
             if (time > 0) {
-                redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+                redisTemplate.opsForValue().set(key, value, time, timeUnit);
             } else {
                 set(key, value);
             }
@@ -737,12 +750,9 @@ public class RedisService {
      * @return 距离内成员的集合
      */
     public List<String> geoRadius(String key, Double x, Double y, Double distance) {
-        Circle circle = new Circle(new Point(x, y),
-                new Distance(distance, Metrics.NEUTRAL));
+        Circle circle = new Circle(new Point(x, y), new Distance(distance, Metrics.NEUTRAL));
         // 增加参数 返回距离，增加asc排序
-        RedisGeoCommands.GeoRadiusCommandArgs geoRadiusCommandArgs = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()
-                .includeDistance()
-                .sortAscending();
+        RedisGeoCommands.GeoRadiusCommandArgs geoRadiusCommandArgs = RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs().includeDistance().sortAscending();
         GeoResults geoResults = redisTemplate.opsForGeo().radius(key, circle, geoRadiusCommandArgs);
         List<GeoResult> contentList = geoResults.getContent();
         List<String> memberList = new ArrayList<>();

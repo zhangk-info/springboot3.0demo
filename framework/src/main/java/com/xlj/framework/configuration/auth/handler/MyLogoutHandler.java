@@ -54,6 +54,9 @@ public class MyLogoutHandler implements LogoutHandler {
                 // 记录用户退出日志
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGOUT, "退出成功"));
                 ServletUtils.renderString(response, JSONUtil.toJsonStr(DataResp.success("退出成功")));
+                redisService.del(CacheConstants.USER_TOKEN + userId + ":" + token);
+            } else {
+                redisService.del(CacheConstants.USER_TOKEN + "sys:" + userId + ":" + token);
             }
         }
     }

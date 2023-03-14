@@ -2,6 +2,7 @@ package com.xlj.framework.filter.context;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.context.CurrentUser;
 import com.xlj.common.context.UserContext;
 import com.xlj.common.context.UserType;
@@ -10,6 +11,7 @@ import com.xlj.common.exception.ErrorCode;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.properties.UriProperties;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
+import com.xlj.system.configuration.RedisService;
 import com.xlj.system.domain.model.LoginUser;
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
@@ -19,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -40,6 +43,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -59,6 +63,8 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     private UriProperties urlProperties;
     @Resource
     private JwtDecoder jwtDecoder;
+    @Autowired
+    private RedisService redisService;
 
     public static void renderJson(HttpServletResponse response, Object jsonObject) {
         try {
@@ -110,7 +116,14 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 if (null == authToken) {
                     throw new ServiceException(ErrorCode.NO_API_ACCESS_POWER);
                 }
-                Jwt jwt = jwtDecoder.decode(StringUtils.substringAfter(authToken, "Bearer ").trim());
+                String token = StringUtils.substringAfter(authToken, "Bearer ").trim();
+
+                if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
+                    throw new ServletException("");
+                }
+                String beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
+
+                Jwt jwt = jwtDecoder.decode(beforeToken);
                 // 从jwt中解析出用户信息
                 Map<String, Object> claims = jwt.getClaims();
                 UserDetails userDetails;
