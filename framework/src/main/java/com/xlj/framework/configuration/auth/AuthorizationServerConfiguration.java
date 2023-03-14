@@ -47,6 +47,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Arrays;
 
@@ -115,10 +116,13 @@ public class AuthorizationServerConfiguration {
         authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
         });
 
+        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+
         http
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[]{})).permitAll()
                         .requestMatchers(urlProperties.getIgnores().toArray(new String[]{})).permitAll()
+                        .requestMatchers(endpointsMatcher).permitAll()
                         .anyRequest()
                         .authenticated())
                 .cors()
