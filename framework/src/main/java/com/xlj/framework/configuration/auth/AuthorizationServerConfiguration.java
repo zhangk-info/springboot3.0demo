@@ -47,6 +47,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Arrays;
@@ -136,7 +137,7 @@ public class AuthorizationServerConfiguration {
                         .authenticationEntryPoint(entryPointCustomizer)
                 );
 
-        http.logout().addLogoutHandler(myLogoutHandler);
+        http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
 
