@@ -49,8 +49,13 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * authorization server配置主类
@@ -123,11 +128,12 @@ public class AuthorizationServerConfiguration {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[]{})).permitAll()
                         .requestMatchers(urlProperties.getIgnores().toArray(new String[]{})).permitAll()
-                        .requestMatchers(endpointsMatcher).permitAll()
+                        .requestMatchers("/logout").permitAll()
                         .anyRequest()
                         .authenticated())
-                .cors()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
+                // 跨站请求攻击防御,默认对"GET", "HEAD", "TRACE", "OPTIONS"请求进行CSRF保护，默认为session中保存CsrfToken,前后端进行验证。
                 .csrf().disable()
                 .rememberMe()
                 .and()
@@ -150,35 +156,18 @@ public class AuthorizationServerConfiguration {
         return securityFilterChain;
     }
 
-//    /**
-//     * 配置OAuth2AuthorizationService 即Authorization持久化和序列化方式
-//     *
-//     * @param jdbcTemplate
-//     * @param registeredClientRepository
-//     * @return
-//     */
-//    @Bean
-//    public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
-//        JdbcOAuth2AuthorizationService service = new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
-//        JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper rowMapper = new JdbcOAuth2AuthorizationService.OAuth2AuthorizationRowMapper(registeredClientRepository);
-//
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        ClassLoader classLoader = JdbcOAuth2AuthorizationService.class.getClassLoader();
-//        List<Module> securityModules = SecurityJackson2Modules.getModules(classLoader);
-//        objectMapper.registerModules(securityModules);
-//        objectMapper.registerModule(new OAuth2AuthorizationServerJackson2Module());
-//
-//        // You will need to write the Mixin for your class so Jackson can marshall it.
-//        // 您将需要为您的类编写 Mixin，以便 Jackson 可以对其进行编组。
-//		objectMapper.addMixIn(UserAuthority.class, UserAuthorityMixin.class);
-//		objectMapper.addMixIn(UserPrincipal.class, UserPrincipalMixin.class);
-//		objectMapper.addMixIn(AuditDeletedDate.class, AuditDeletedDateMixin.class);
-//		objectMapper.addMixIn(Long.class, LongMixin.class);
-//
-//        rowMapper.setObjectMapper(objectMapper);
-//        service.setAuthorizationRowMapper(rowMapper);
-//        return service;
-//    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(false);
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        configuration.setMaxAge(Duration.ofHours(1));
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     /**
      * 确认授权持久化
