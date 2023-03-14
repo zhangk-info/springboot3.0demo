@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.xlj.common.properties.UriProperties;
 import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
@@ -15,7 +16,7 @@ import com.xlj.framework.configuration.auth.customizer.token.claims.impl.OAuth2T
 import com.xlj.framework.configuration.auth.federated.identity.EntryPointCustomizer;
 import com.xlj.framework.configuration.auth.handler.CustomerAuthenticationFailureHandler;
 import com.xlj.framework.configuration.auth.handler.CustomerAuthenticationSuccessHandler;
-import com.xlj.framework.configuration.auth.handler.LogoutSuccessHandlerImpl;
+import com.xlj.framework.configuration.auth.handler.MyLogoutHandler;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;
 import jakarta.annotation.Resource;
@@ -46,7 +47,6 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Arrays;
 
@@ -63,8 +63,8 @@ public class AuthorizationServerConfiguration {
     @Value("${oauth2.token.issuer}")
     private String tokenIssuer;
 
-    @Resource
-    private LogoutSuccessHandlerImpl logoutSuccessHandler;
+    @Autowired
+    private MyLogoutHandler myLogoutHandler;
     @Autowired
     private CustomerAuthenticationFailureHandler authenticationFailureHandler;
     @Autowired
@@ -72,6 +72,10 @@ public class AuthorizationServerConfiguration {
 
     @Autowired
     private Sm4Utils sm4Utils;
+    @Autowired
+    private EntryPointCustomizer entryPointCustomizer;
+    @Resource
+    private UriProperties urlProperties;
 
     /**
      * PasswordEncoder
@@ -82,14 +86,13 @@ public class AuthorizationServerConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new SM4PasswordEncoder(sm4Utils);
     }
-    @Autowired
-    private EntryPointCustomizer entryPointCustomizer;
+
     /**
      * 主要配置
      *
-     * @param http
-     * @return
-     * @throws Exception
+     * @param http http
+     * @return SecurityFilterChain
+     * @throws Exception e
      */
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -101,9 +104,7 @@ public class AuthorizationServerConfiguration {
         http.apply(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
             tokenEndpoint.accessTokenRequestConverter(
                     new DelegatingAuthenticationConverter(Arrays.asList(
-//				new OAuth2AuthorizationCodeAuthenticationConverter(),
                             new OAuth2RefreshTokenAuthenticationConverter(),
-//				new OAuth2ClientCredentialsAuthenticationConverter(),
                             new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
             );
             tokenEndpoint.accessTokenResponseHandler(authenticationSuccessHandler);
@@ -114,10 +115,12 @@ public class AuthorizationServerConfiguration {
         authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
         });
 
-        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-
         http
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[]{})).permitAll()
+                        .requestMatchers(urlProperties.getIgnores().toArray(new String[]{})).permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .cors()
                 .and()
                 .csrf().disable()
@@ -129,7 +132,7 @@ public class AuthorizationServerConfiguration {
                         .authenticationEntryPoint(entryPointCustomizer)
                 );
 
-        http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+        http.logout().addLogoutHandler(myLogoutHandler);
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
 

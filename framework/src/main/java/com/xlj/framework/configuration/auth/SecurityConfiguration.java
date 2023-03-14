@@ -2,8 +2,6 @@ package com.xlj.framework.configuration.auth;
 
 import com.xlj.common.properties.UriProperties;
 import com.xlj.framework.configuration.auth.converter.CustomJwtGrantedAuthoritiesConverter;
-import com.xlj.framework.configuration.auth.federated.identity.FederatedIdentityConfigurer;
-import com.xlj.framework.configuration.auth.federated.identity.UserRepositoryOAuth2UserHandler;
 import com.xlj.framework.configuration.auth.service.SecurityUserDetailService;
 import jakarta.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
@@ -90,37 +88,6 @@ public class SecurityConfiguration {
                 .requestMatchers(urlProperties.getIgnores().toArray(new String[0]))
                 .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[0]))
                 .requestMatchers("/webjars/**", "/image/**");
-    }
-
-    /**
-     * 这个是在客户端定义的
-     *
-     * @param http
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        LOGGER.debug("in configure HttpSecurity");
-
-        FederatedIdentityConfigurer federatedIdentityConfigurer = new FederatedIdentityConfigurer().oauth2UserHandler(new UserRepositoryOAuth2UserHandler());
-
-        http.authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests
-                                .anyRequest()
-                                .authenticated()
-                )
-                .csrf()/*.ignoringRequestMatchers(PathRequest.toH2Console())*/
-                .and().cors()
-//                .and().headers().frameOptions().sameOrigin()
-                .and()
-                .apply(federatedIdentityConfigurer)
-                .and()
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.decoder(jwtDecoder)/*.decoder(jwtDecoder())*/.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                );
-
-        return http.build();
     }
 
     /**
