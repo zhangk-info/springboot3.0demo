@@ -4,7 +4,6 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.xlj.common.properties.UriProperties;
 import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
@@ -70,7 +69,7 @@ public class AuthorizationServerConfiguration {
     @Value("${oauth2.token.issuer}")
     private String tokenIssuer;
 
-    @Autowired
+    @Resource
     private MyLogoutHandler myLogoutHandler;
     @Autowired
     private CustomerAuthenticationFailureHandler authenticationFailureHandler;
@@ -81,8 +80,6 @@ public class AuthorizationServerConfiguration {
     private Sm4Utils sm4Utils;
     @Autowired
     private EntryPointCustomizer entryPointCustomizer;
-    @Resource
-    private UriProperties urlProperties;
 
     /**
      * PasswordEncoder
@@ -108,7 +105,7 @@ public class AuthorizationServerConfiguration {
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
 
         // 配置OAuth2 Token endpoint
-        http.apply(authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
+        authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
             tokenEndpoint.accessTokenRequestConverter(
                     new DelegatingAuthenticationConverter(Arrays.asList(
                             new OAuth2RefreshTokenAuthenticationConverter(),
@@ -116,34 +113,27 @@ public class AuthorizationServerConfiguration {
             );
             tokenEndpoint.accessTokenResponseHandler(authenticationSuccessHandler);
             tokenEndpoint.errorResponseHandler(authenticationFailureHandler);
-        }));
+        });
 
         // 配置OAuth2 Authorization endpoint.
         authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
         });
 
+        http.apply(authorizationServerConfigurer);
+
+        // 这个里面居然不包含/logout
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[]{})).permitAll()
-                        .requestMatchers(urlProperties.getIgnores().toArray(new String[]{})).permitAll()
-                        .requestMatchers("/logout").permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                // 跨站请求攻击防御,默认对"GET", "HEAD", "TRACE", "OPTIONS"请求进行CSRF保护，默认为session中保存CsrfToken,前后端进行验证。
+                .securityMatcher("/oauth2/token","/logout")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
                 .csrf().disable()
-                .rememberMe()
-                .and()
-                .apply(authorizationServerConfigurer)
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(entryPointCustomizer)
                 );
-
-        http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
+        http.logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
 
         SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
 
@@ -225,11 +215,8 @@ public class AuthorizationServerConfiguration {
 
         JwtCustomizerHandler jwtCustomizerHandler = JwtCustomizerHandler.getJwtCustomizerHandler();
         JwtCustomizer jwtCustomizer = new JwtCustomizerImpl(jwtCustomizerHandler);
-        OAuth2TokenCustomizer<JwtEncodingContext> customizer = (context) -> {
-            jwtCustomizer.customizeToken(context);
-        };
 
-        return customizer;
+        return jwtCustomizer::customizeToken;
     }
 
     @Bean
@@ -246,7 +233,7 @@ public class AuthorizationServerConfiguration {
     /**
      * 自定义认证方式配置
      *
-     * @param http
+     * @param http http
      */
     private void addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(HttpSecurity http) {
 
