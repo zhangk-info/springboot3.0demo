@@ -47,7 +47,7 @@
             </if>
         </where>
         <if test="query.sortName != null and query.sortName != null and query.sortName != '' and query.sortName != ''">
-            ${r"order by ${query.sortName} ${query.sortOrder}"}
+            ${r"order by t.${query.sortName} ${query.sortOrder}"}
         </if>
     </select>
 </mapper>
