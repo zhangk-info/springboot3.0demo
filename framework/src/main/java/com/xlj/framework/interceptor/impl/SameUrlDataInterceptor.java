@@ -5,7 +5,7 @@ import com.xlj.common.annotation.RepeatSubmit;
 import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.constants.Constants;
 import com.xlj.common.utils.HttpHelper;
-import com.xlj.framework.filter.web_security.RepeatedlyRequestWrapper;
+import com.xlj.framework.filter.web_security.XssHttpServletRequestWrapper;
 import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
 import com.xlj.system.configuration.RedisService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
     @Override
     public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation) {
         String nowParams = "";
-        if (request instanceof RepeatedlyRequestWrapper repeatedlyRequest) {
+        if (request instanceof XssHttpServletRequestWrapper repeatedlyRequest) {
             nowParams = HttpHelper.getBodyString(repeatedlyRequest);
         }
 
