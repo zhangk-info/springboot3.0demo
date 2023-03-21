@@ -6,6 +6,7 @@ import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizerHandler;
 import com.xlj.system.domain.model.LoginUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 自定义jwt内容
@@ -39,9 +41,10 @@ public class UsernamePasswordAuthenticationTokenJwtCustomizerHandler extends Abs
 
         Authentication authentication = jwtEncodingContext.getPrincipal();
 
-        // 这里不设置authorities,到CurrentUserFilter.setAuthorizationWithAuthority去设置
-        Set<String> authorities = new HashSet<>();
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        Set<String> authorities = userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
         if (userPrincipal instanceof LoginUser loginUser) {
             userAttributes.putAll(BeanUtil.beanToMap(loginUser));
         } else {
