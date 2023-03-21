@@ -1,35 +1,44 @@
 package com.xlj.framework.filter.web_security;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.xlj.common.exception.ServiceException;
-import io.micrometer.core.instrument.util.IOUtils;
+import com.xlj.common.utils.HttpHelper;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.DelegatingServletInputStream;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     /**
      * html过滤
      */
-    private static HTMLFilter htmlFilter = new HTMLFilter();
+    private static final HTMLFilter HTML_FILTER = new HTMLFilter();
     /**
      * 没被包装过的HttpServletRequest（特殊场景，需要自己过滤）
      */
-    private HttpServletRequest orgRequest;
+    private final HttpServletRequest orgRequest;
 
-    public XssHttpServletRequestWrapper(HttpServletRequest request) {
+    private final byte[] body;
+    private JSONObject jsonObject;
+
+    public XssHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
         orgRequest = request;
+        this.body = HttpHelper.getBodyString(request).getBytes(StandardCharsets.UTF_8);
+        this.getInputStream();
     }
 
     /**
@@ -44,17 +53,26 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     @Override
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(getInputStream()));
+    }
+
+    @Override
     public ServletInputStream getInputStream() throws IOException {
 
         // 非json类型，直接返回
-        if (!MediaType.APPLICATION_JSON_VALUE.equalsIgnoreCase(super.getHeader(HttpHeaders.CONTENT_TYPE))) {
+        if (!StringUtils.startsWithIgnoreCase(super.getContentType(), MediaType.APPLICATION_JSON_VALUE)) {
             return super.getInputStream();
         }
 
         // 为空，直接返回
-        String json = IOUtils.toString(super.getInputStream(), StandardCharsets.UTF_8);
+        String json = new String(body, StandardCharsets.UTF_8);
         if (StringUtils.isBlank(json)) {
             return super.getInputStream();
+        } else {
+            if (JSONUtil.isTypeJSON(json)) {
+                jsonObject = JSONUtil.parseObj(json);
+            }
         }
 
         //xss过滤
@@ -70,6 +88,9 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         if (StringUtils.isNotBlank(value)) {
             sqlInject(name, value);
             value = xssEncode(value);
+        }
+        if (Objects.isNull(value) && Objects.nonNull(jsonObject) && jsonObject.containsKey(name)) {
+            return JSONUtil.toJsonStr(jsonObject.get(name));
         }
         return value;
     }
@@ -114,7 +135,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private String xssEncode(String input) {
-        return htmlFilter.filter(input);
+        return HTML_FILTER.filter(input);
     }
 
     public void sqlInject(String name, String value) {
