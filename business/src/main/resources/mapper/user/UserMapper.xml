@@ -10,10 +10,11 @@
                 <!--and (t.x like concat('%', #{query.keyWord} ,'%') or t.x like concat('%',#{query.keyWord},'%')-->
             </if>
         </where>
-        <if test="query.sortName != null and query.sortName != null and query.sortName != '' and query.sortName != '' and query.sortName.contains(',') ">
+        <!-- 可以直接传入跑【sortName为 t.id asc,t.name desc】 或者 【sortName为 t.id,t.name ，sortOrder 为 desc】 -->
+        <if test="query.sortName != null and query.sortName != '' and query.sortName.contains(','.toString()) ">
             order by t.${query.sortName} ${query.sortOrder}
         </if>
-        <if test="query.sortName != null and query.sortName != null and query.sortName != '' and query.sortName != '' and !query.sortName.contains(',') ">
+        <if test="query.sortName != null and query.sortOrder != null and query.sortName != '' and query.sortOrder != '' and !query.sortName.contains(','.toString()) ">
             order by t.${query.sortName} ${query.sortOrder}
         </if>
     </select>
