@@ -8,6 +8,7 @@ import com.xlj.common.properties.UriProperties;
 import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
+import com.xlj.framework.configuration.auth.converter.CustomJwtGrantedAuthoritiesConverter;
 import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizer;
 import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizerHandler;
 import com.xlj.framework.configuration.auth.customizer.jwt.impl.JwtCustomizerImpl;
@@ -19,17 +20,23 @@ import com.xlj.framework.configuration.auth.handler.CustomerAuthenticationSucces
 import com.xlj.framework.configuration.auth.handler.MyLogoutHandler;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;
+import com.xlj.framework.filter.context.CurrentUserFilter;
+import com.xlj.framework.filter.web_security.BeforeTokenAuthorizationFilter;
+import com.xlj.framework.filter.web_security.XssFilter;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -46,6 +53,9 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -63,6 +73,8 @@ import java.util.Collections;
  * @author zhangkun
  */
 @Configuration(proxyBeanMethods = false)
+@EnableWebSecurity
+@EnableMethodSecurity
 public class AuthorizationServerConfiguration {
 
     private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
@@ -83,6 +95,13 @@ public class AuthorizationServerConfiguration {
     private EntryPointCustomizer entryPointCustomizer;
     @Resource
     private UriProperties urlProperties;
+    @Autowired
+    private XssFilter xssFilter;
+    @Autowired
+    @Lazy
+    private CurrentUserFilter currentUserFilter;
+    @Autowired
+    private BeforeTokenAuthorizationFilter beforeTokenAuthorizationFilter;
 
     /**
      * PasswordEncoder
@@ -128,8 +147,40 @@ public class AuthorizationServerConfiguration {
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
-                .securityMatcher("/oauth2/token", "/logout")
+                .securityMatcher(endpointsMatcher)
+                .securityMatcher("/logout")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+                .csrf().disable()
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
+                .exceptionHandling((exceptions) -> exceptions
+                        .authenticationEntryPoint(entryPointCustomizer)
+                );
+
+        SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
+        http.logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
+        /*
+         * Custom configuration for Resource Owner Password grant type. Current implementation has no support for Resource Owner
+         * Password grant type
+         */
+        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
+
+        return securityFilterChain;
+    }
+
+    /**
+     * 配置ResourceServer以及退出登录
+     *
+     * @param http
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public SecurityFilterChain securityFilterChainForResourceServer(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/**")
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/oauth2/token").permitAll()
                         .requestMatchers(urlProperties.getIgnores().toArray(new String[0])).permitAll()
                         .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[0])).permitAll()
                         .anyRequest()
@@ -140,17 +191,26 @@ public class AuthorizationServerConfiguration {
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(entryPointCustomizer)
                 );
-        http.logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
+        // spring security 5.x默认的bearer token解析器没有启用从请求参数中获取token 配置这个以启用filter
+        http.oauth2ResourceServer().jwt(jwt -> jwt.decoder(jwtDecoder(jwkSource())).jwtAuthenticationConverter(jwtAuthenticationConverter())).bearerTokenResolver(new DefaultBearerTokenResolver());
+        http.addFilterBefore(beforeTokenAuthorizationFilter, BearerTokenAuthenticationFilter.class);
 
-        SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
+        return http.build();
+    }
 
-        /**
-         * Custom configuration for Resource Owner Password grant type. Current implementation has no support for Resource Owner
-         * Password grant type
-         */
-        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
+    /**
+     * JwtAuthenticationConverter
+     *
+     * @return JwtAuthenticationConverter
+     */
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        CustomJwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new CustomJwtGrantedAuthoritiesConverter();
+        // 默认前缀是SCOPE_ 这里去掉了
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
 
-        return securityFilterChain;
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
     }
 
     @Bean
@@ -169,9 +229,9 @@ public class AuthorizationServerConfiguration {
     /**
      * 确认授权持久化
      *
-     * @param jdbcTemplate
-     * @param registeredClientRepository
-     * @return
+     * @param jdbcTemplate               jdbcTemplate
+     * @param registeredClientRepository registeredClientRepository
+     * @return OAuth2AuthorizationConsentService
      */
     @Bean
     public OAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
@@ -181,7 +241,7 @@ public class AuthorizationServerConfiguration {
     /**
      * jwk认证配置
      *
-     * @return
+     * @return JWKSource
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
@@ -193,8 +253,8 @@ public class AuthorizationServerConfiguration {
     /**
      * JwtDecoder
      *
-     * @param jwkSource
-     * @return
+     * @param jwkSource jwkSource
+     * @return JwtDecoder
      */
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
@@ -205,7 +265,7 @@ public class AuthorizationServerConfiguration {
      * AuthorizationServerSettings配置，这里只需要配置issuer
      * setting issuer
      *
-     * @return
+     * @return AuthorizationServerSettings
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
@@ -215,7 +275,7 @@ public class AuthorizationServerConfiguration {
     /**
      * 自定义jwt内容
      *
-     * @return
+     * @return OAuth2TokenCustomizer
      */
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> buildJwtCustomizer() {
