@@ -4,6 +4,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.xlj.common.properties.UriProperties;
 import com.xlj.common.sgcc.Sm4Utils;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationConverter;
 import com.xlj.framework.configuration.auth.authentication.OAuth2ResourceOwnerPasswordAuthenticationProvider;
@@ -80,6 +81,8 @@ public class AuthorizationServerConfiguration {
     private Sm4Utils sm4Utils;
     @Autowired
     private EntryPointCustomizer entryPointCustomizer;
+    @Resource
+    private UriProperties urlProperties;
 
     /**
      * PasswordEncoder
@@ -125,8 +128,12 @@ public class AuthorizationServerConfiguration {
         RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
 
         http
-                .securityMatcher("/oauth2/token","/logout")
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+                .securityMatcher("/oauth2/token", "/logout")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers(urlProperties.getIgnores().toArray(new String[0])).permitAll()
+                        .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[0])).permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()

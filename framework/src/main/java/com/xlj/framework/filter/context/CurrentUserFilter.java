@@ -11,6 +11,7 @@ import com.xlj.common.exception.ErrorCode;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.properties.UriProperties;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
+import com.xlj.framework.filter.web_security.HeaderMapRequestWrapper;
 import com.xlj.system.configuration.RedisService;
 import com.xlj.system.domain.model.LoginUser;
 import jakarta.annotation.Resource;
@@ -108,6 +109,7 @@ public class CurrentUserFilter extends OncePerRequestFilter {
         if (matcher(request.getRequestURI()) || antPathMatcher.match("/logout", request.getRequestURI())) {
             filterChain.doFilter(request, response);
         } else {
+            String beforeToken;
             try {
                 String authToken = request.getHeader("Authorization");
                 if (null == authToken) {
@@ -121,7 +123,7 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
                     throw new ServletException("");
                 }
-                String beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
+                beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
 
                 Jwt jwt = jwtDecoder.decode(beforeToken);
                 // 从jwt中解析出用户信息
@@ -156,7 +158,10 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 return;
             }
 
-            filterChain.doFilter(request, response);
+            // 我们做过token缩短，这里要把原值放回header
+            HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(request);
+            requestWrapper.addHeader("Authorization", "Bearer " + beforeToken);
+            filterChain.doFilter(requestWrapper, response);
         }
     }
 
