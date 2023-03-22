@@ -1,8 +1,8 @@
 package com.xlj.framework.filter.web_security;
 
+import cn.hutool.json.JSONUtil;
 import com.xlj.common.constants.CacheConstants;
-import com.xlj.common.exception.ErrorCode;
-import com.xlj.common.exception.ServiceException;
+import com.xlj.common.entity.DataResp;
 import com.xlj.system.configuration.RedisService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +24,17 @@ public class BeforeTokenAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private RedisService redisService;
 
+    private void responseError(HttpServletResponse response, String msg) throws IOException {
+        response.setStatus(401);
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/json");
+        if (StringUtils.isBlank(msg)) {
+            response.getWriter().print(JSONUtil.toJsonStr(DataResp.error("认证过期，请重新登录")));
+        } else {
+            response.getWriter().print(JSONUtil.toJsonStr(DataResp.error(msg)));
+        }
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -43,11 +54,14 @@ public class BeforeTokenAuthorizationFilter extends OncePerRequestFilter {
             authToken = request.getParameter("t");
         }
         if (null == authToken) {
-            throw new ServiceException(ErrorCode.NO_API_ACCESS_POWER);
+            // 这里要向下流转，让authorizationFilter处理异常，自己抛出异常会被抓然后返回500错误而不是401，除非自己render
+            responseError(response, "请使用正确的认证方式");
+            return;
         }
         String token = StringUtils.substringAfter(authToken, "Bearer ").trim();
         // 从缓存中转换缩短的token为正常的token
         if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
+            // 这里要向下流转，让authorizationFilter处理异常，自己抛出异常会被抓然后返回500错误而不是401，除非自己render
             filterChain.doFilter(headerMapRequestWrapper, response);
             return;
         }

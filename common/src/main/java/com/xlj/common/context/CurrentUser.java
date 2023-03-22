@@ -30,4 +30,5 @@ public class CurrentUser {
 
     private Enum<UserType> userType;
 
+    private Boolean sysUser;
 }

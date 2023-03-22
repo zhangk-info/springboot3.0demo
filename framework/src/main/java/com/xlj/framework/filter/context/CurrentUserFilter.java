@@ -2,7 +2,6 @@ package com.xlj.framework.filter.context;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
-import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.context.CurrentUser;
 import com.xlj.common.context.UserContext;
 import com.xlj.common.context.UserType;
@@ -11,7 +10,6 @@ import com.xlj.common.exception.ErrorCode;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.properties.UriProperties;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
-import com.xlj.framework.filter.web_security.HeaderMapRequestWrapper;
 import com.xlj.system.configuration.RedisService;
 import com.xlj.system.domain.model.LoginUser;
 import jakarta.annotation.Resource;
@@ -36,15 +34,12 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -67,34 +62,8 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     @Autowired
     private RedisService redisService;
 
-    public static void renderJson(HttpServletResponse response, Object jsonObject) {
-        try {
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            PrintWriter writer = response.getWriter();
-            writer.write(JSONUtil.toJsonStr(jsonObject));
-        } catch (IOException e) {
-            // do something
-        }
-    }
-
-    public static <T> T getClaim(Jwt jwt, String claim, Class<T> clazz) {
-
-        Assert.notNull(jwt, "jwt cannot be null");
-        Assert.hasText(claim, "claim cannot be null or empty");
-
-        T value = null;
-
-        if (jwt.hasClaim(claim)) {
-            value = jwt.getClaim(claim);
-        }
-
-        return value;
-    }
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         // cors处理 对于OPTIONS请求直接返回成功 前端对于post请求 不管有没有跨域都会发options请求
         if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
             response.setStatus(HttpStatus.OK.value());
@@ -106,10 +75,11 @@ public class CurrentUserFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Credentials", "true");
             return;
         }
+        log.info(" -- " + request.getRequestURI());
+        // 需要跳过的直接跳过
         if (matcher(request.getRequestURI()) || antPathMatcher.match("/logout", request.getRequestURI())) {
             filterChain.doFilter(request, response);
         } else {
-            String beforeToken;
             try {
                 String authToken = request.getHeader("Authorization");
                 if (null == authToken) {
@@ -118,17 +88,18 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 if (null == authToken) {
                     throw new ServiceException(ErrorCode.NO_API_ACCESS_POWER);
                 }
-                String token = StringUtils.substringAfter(authToken, "Bearer ").trim();
+                String beforeToken = StringUtils.substringAfter(authToken, "Bearer ").trim();
 
-                if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
-                    throw new ServletException("");
-                }
-                beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
+//                if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
+//                    throw new ServletException("");
+//                }
+//                String beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
 
                 Jwt jwt = jwtDecoder.decode(beforeToken);
                 // 从jwt中解析出用户信息
                 Map<String, Object> claims = jwt.getClaims();
                 UserDetails userDetails;
+                // 如果包含user字段，那么是LoginUser
                 if (claims.containsKey("user")) {
                     userDetails = JSONUtil.toBean(JSONUtil.toJsonStr(claims), LoginUser.class, true);
                 } else {
@@ -137,14 +108,14 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 // 获取用户共有且需要的信息转换成CurrentUser并放入ThreadLocal
                 CurrentUser currentUser = new CurrentUser();
                 BeanUtil.copyProperties(userDetails, currentUser);
-                if (userDetails instanceof LoginUser) {
-                    currentUser.setUserType(UserType.SYSTEM);
+                if (claims.containsKey("user")) {
+                    currentUser.setSysUser(true);
                 }
                 UserContext.set(currentUser);
                 log.debug("current currentUser is : {}", currentUser);
                 // 重新设置权限
                 setAuthorizationWithAuthority(request, userDetails);
-                log.debug("set authority success : {}", SecurityContextHolder.getContext().getAuthentication().getCredentials());
+                log.info("set authority success : {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
             } catch (Exception e) {
                 log.error("current user filter error. url is [{}]", request.getRequestURI(), e);
                 response.setStatus(401);
@@ -157,18 +128,14 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 }
                 return;
             }
-
-            // 我们做过token缩短，这里要把原值放回header
-            HeaderMapRequestWrapper requestWrapper = new HeaderMapRequestWrapper(request);
-            requestWrapper.addHeader("Authorization", "Bearer " + beforeToken);
-            filterChain.doFilter(requestWrapper, response);
+            filterChain.doFilter(request, response);
         }
     }
 
     /**
      * 重新设置SecurityContext的Authentication，用于重新设置roles
      *
-     * @param request
+     * @param request request
      */
     private void setAuthorizationWithAuthority(HttpServletRequest request, UserDetails userDetails) {
 
@@ -176,8 +143,7 @@ public class CurrentUserFilter extends OncePerRequestFilter {
 
         // 根据用户类型设置不同的权限
         Set<String> authorities;
-        if (userDetails instanceof LoginUser) {
-            LoginUser loginUser = (LoginUser) userDetails;
+        if (userDetails instanceof LoginUser loginUser) {
             authorities = loginUser.getPermissions();
             // 后台的设置到token中
             for (String role : authorities) {
@@ -185,7 +151,7 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 simpleGrantedAuthorities.add(grantedAuthority);
             }
             // 给权限加入UserType.SYSTEM
-            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(UserType.SYSTEM.toString()));
+            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(UserType.SYSTEM.name()));
         } else {
             // TODO 得到当前用户的所有权限
             SecurityUserDetails securityUserDetails = (SecurityUserDetails) userDetails;
@@ -195,12 +161,10 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 simpleGrantedAuthorities.add(grantedAuthority);
             }
             // 给权限加入UserType.DEFAULT
-            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(UserType.DEFAULT.toString()));
+            simpleGrantedAuthorities.add(new SimpleGrantedAuthority(UserType.DEFAULT.name()));
         }
         // 生成新的AuthenticationToken
-        PreAuthenticatedAuthenticationToken auth = new PreAuthenticatedAuthenticationToken(
-                userDetails, null, simpleGrantedAuthorities
-        );
+        PreAuthenticatedAuthenticationToken auth = new PreAuthenticatedAuthenticationToken(userDetails, null, simpleGrantedAuthorities);
         auth.setDetails(new WebAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
@@ -208,23 +172,20 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     /**
      * 匹配需要放开的路径
      *
-     * @param requestUrl
-     * @return
+     * @param requestUrl requestUrl
+     * @return 是否匹配
      */
     private boolean matcher(String requestUrl) {
-
         for (String url : urlProperties.getIgnores()) {
             if (antPathMatcher.match(url, requestUrl)) {
                 return true;
             }
         }
-
         for (String url : urlProperties.getPublicIgnores()) {
             if (antPathMatcher.match(url, requestUrl)) {
                 return true;
             }
         }
-
         return false;
     }
 }
