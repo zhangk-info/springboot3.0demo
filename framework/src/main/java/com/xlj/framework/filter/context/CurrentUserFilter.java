@@ -2,11 +2,11 @@ package com.xlj.framework.filter.context;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.context.CurrentUser;
 import com.xlj.common.context.UserContext;
 import com.xlj.common.context.UserType;
 import com.xlj.common.entity.DataResp;
-import com.xlj.common.exception.ErrorCode;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.properties.UriProperties;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -86,14 +87,14 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                     authToken = request.getParameter("t");
                 }
                 if (null == authToken) {
-                    throw new ServiceException(ErrorCode.NO_API_ACCESS_POWER);
+                    throw new ServiceException("请使用正确的认证方式");
                 }
-                String beforeToken = StringUtils.substringAfter(authToken, "Bearer ").trim();
+                String token = StringUtils.substringAfter(authToken, "Bearer ").trim();
 
-//                if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
-//                    throw new ServletException("");
-//                }
-//                String beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
+                if (Objects.isNull(redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token))) {
+                    throw new ServletException("认证过期");
+                }
+                String beforeToken = (String) redisService.get(CacheConstants.LOGIN_TOKEN_KEY + token);
 
                 Jwt jwt = jwtDecoder.decode(beforeToken);
                 // 从jwt中解析出用户信息
@@ -188,5 +189,6 @@ public class CurrentUserFilter extends OncePerRequestFilter {
         }
         return false;
     }
+
 }
 

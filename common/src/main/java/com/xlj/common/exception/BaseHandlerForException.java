@@ -6,6 +6,7 @@ import com.xlj.common.utils.MessageUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
@@ -112,7 +113,7 @@ public class BaseHandlerForException {
         } catch (Exception e) {
             i18nMsg = ex.getMessage();
         }
-        i18nMsg = i18nMsg.substring(i18nMsg.indexOf("::") + 2);
+        i18nMsg = i18nMsg.substring(!i18nMsg.contains("::") ? 0 : i18nMsg.indexOf("::") + 2);
         DataResp<Object> dataResp = new DataResp<>(ex.getCode(), i18nMsg, null);
         log.error(ex.getMessage(), ex);
         return dataResp;
@@ -145,10 +146,15 @@ public class BaseHandlerForException {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Object otherExceptionHandler(HttpServletResponse response, Exception ex) {
-        DataResp<Object> dataResp = new DataResp<>(ErrorCode.DEFAULT.code, ex.getMessage(), null);
+        String msg = "";
+        if (ex.getClass().getName().equals("org.springframework.security.access.AccessDeniedException")) {
+            msg = "无权访问";
+        }
+        DataResp<Object> dataResp = new DataResp<>(ErrorCode.DEFAULT.code, StringUtils.isBlank(msg) ? ex.getMessage() : msg, null);
         log.error(ex.getMessage(), ex);
         return dataResp;
     }
+
 
     /**
      * AuthenticationException

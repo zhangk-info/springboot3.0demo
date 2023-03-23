@@ -23,14 +23,13 @@ import com.xlj.framework.configuration.password.SM4PasswordEncoder;
 import com.xlj.framework.filter.context.CurrentUserFilter;
 import com.xlj.framework.filter.web_security.BeforeTokenAuthorizationFilter;
 import com.xlj.framework.filter.web_security.XssFilter;
+import com.xlj.system.configuration.RedisService;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -101,7 +100,9 @@ public class AuthorizationServerConfiguration {
     @Lazy
     private CurrentUserFilter currentUserFilter;
     @Autowired
-    private BeforeTokenAuthorizationFilter beforeTokenAuthorizationFilter;
+    private RedisService redisService;
+    @Autowired
+    private UriProperties uriProperties;
 
     /**
      * PasswordEncoder
@@ -111,61 +112,6 @@ public class AuthorizationServerConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new SM4PasswordEncoder(sm4Utils);
-    }
-
-    /**
-     * 主要配置
-     *
-     * @param http http
-     * @return SecurityFilterChain
-     * @throws Exception e
-     */
-    @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
-
-        // 配置OAuth2 Token endpoint
-        authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
-            tokenEndpoint.accessTokenRequestConverter(
-                    new DelegatingAuthenticationConverter(Arrays.asList(
-                            new OAuth2RefreshTokenAuthenticationConverter(),
-                            new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
-            );
-            tokenEndpoint.accessTokenResponseHandler(authenticationSuccessHandler);
-            tokenEndpoint.errorResponseHandler(authenticationFailureHandler);
-        });
-
-        // 配置OAuth2 Authorization endpoint.
-        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
-        });
-
-        http.apply(authorizationServerConfigurer);
-
-        // 这个里面居然不包含/logout
-        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
-
-        http
-                .securityMatcher(endpointsMatcher)
-                .securityMatcher("/logout")
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-                .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(entryPointCustomizer)
-                );
-
-        SecurityFilterChain securityFilterChain = http.formLogin(Customizer.withDefaults()).build();
-        http.logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
-        /*
-         * Custom configuration for Resource Owner Password grant type. Current implementation has no support for Resource Owner
-         * Password grant type
-         */
-        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
-
-        return securityFilterChain;
     }
 
     /**
@@ -193,9 +139,63 @@ public class AuthorizationServerConfiguration {
                 );
         // spring security 5.x默认的bearer token解析器没有启用从请求参数中获取token 配置这个以启用filter
         http.oauth2ResourceServer().jwt(jwt -> jwt.decoder(jwtDecoder(jwkSource())).jwtAuthenticationConverter(jwtAuthenticationConverter())).bearerTokenResolver(new DefaultBearerTokenResolver());
-        http.addFilterBefore(beforeTokenAuthorizationFilter, BearerTokenAuthenticationFilter.class);
+        http.addFilterBefore(new BeforeTokenAuthorizationFilter(redisService, uriProperties), BearerTokenAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * 主要配置
+     *
+     * @param http http
+     * @return SecurityFilterChain
+     * @throws Exception e
+     */
+    @Bean
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = new OAuth2AuthorizationServerConfigurer();
+
+        // 配置OAuth2 Token endpoint
+        authorizationServerConfigurer.tokenEndpoint((tokenEndpoint) -> {
+            tokenEndpoint.accessTokenRequestConverter(
+                    new DelegatingAuthenticationConverter(Arrays.asList(
+                            new OAuth2RefreshTokenAuthenticationConverter(),
+                            new OAuth2ResourceOwnerPasswordAuthenticationConverter()))
+            );
+            tokenEndpoint.accessTokenResponseHandler(authenticationSuccessHandler);
+            tokenEndpoint.errorResponseHandler(authenticationFailureHandler);
+        });
+
+        // 配置OAuth2 Authorization endpoint.
+        authorizationServerConfigurer.authorizationEndpoint(authorizationEndpoint -> {
+        });
+
+        http.apply(authorizationServerConfigurer);
+
+        // 这个里面居然不包含/logout
+        RequestMatcher endpointsMatcher = authorizationServerConfigurer.getEndpointsMatcher();
+
+        http
+                .securityMatcher("/oauth2/token", "/logout")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+                .csrf().disable()
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
+                .exceptionHandling((exceptions) -> exceptions
+                        .authenticationEntryPoint(entryPointCustomizer)
+                );
+
+        http.formLogin(Customizer.withDefaults());
+        http.logout().logoutUrl("/logout").logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()).addLogoutHandler(myLogoutHandler);
+
+        SecurityFilterChain securityFilterChain = http.build();
+        /*
+         * Custom configuration for Resource Owner Password grant type. Current implementation has no support for Resource Owner
+         * Password grant type
+         */
+        addCustomOAuth2ResourceOwnerPasswordAuthenticationProvider(http);
+        return securityFilterChain;
     }
 
     /**

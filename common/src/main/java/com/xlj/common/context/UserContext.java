@@ -1,5 +1,7 @@
 package com.xlj.common.context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 /**
@@ -32,11 +34,22 @@ public final class UserContext {
         return Objects.isNull(get()) ? null : get().getUsername();
     }
 
-    public static String getName() {
-        return Objects.isNull(get()) ? "" : get().getName();
+    /**
+     * 是否超级管理员
+     *
+     * @return 是否超级管理员
+     */
+    public static boolean isSuperAdmin() {
+        return getId() != null && 1L == getId();
     }
 
-    public static boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
+    /**
+     * 是否后台用户
+     *
+     * @return 是否后台用户
+     */
+    public static boolean isSysUser() {
+        return Objects.nonNull(get().getSysUser()) && get().getSysUser();
     }
+
 }
