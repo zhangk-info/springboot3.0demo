@@ -1,6 +1,6 @@
 package com.xlj.framework.configuration.webmvc;
 
-import com.xlj.framework.configuration.jackson.ObjectMapperConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xlj.framework.interceptor.RepeatSubmitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +26,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     @Lazy
     private RepeatSubmitInterceptor repeatSubmitInterceptor;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * 配置静态资源处理的两种方式，两种方式任选其一
@@ -73,18 +76,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
     }
 
-    /**
-     * 使用此方法, 以下 spring-boot: jackson时间格式化 配置 将会失效
-     * spring.jackson.time-zone=GMT+8
-     * spring.jackson.date-format=yyyy-MM-dd HH:mm:ss
-     * 原因: 会覆盖 @EnableAutoConfiguration 关于 WebMvcAutoConfiguration 的配置
-     * */
     @Override
-    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        // 设置格式化内容
-        converter.setObjectMapper(new ObjectMapperConfig().getSelfObjectMapper());
-        converters.add(0, converter);
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        WebMvcConfigurer.super.configureMessageConverters(converters);
+        for (HttpMessageConverter<?> converter : converters) {
+            if (converter instanceof MappingJackson2HttpMessageConverter jsonMessageConverter) {
+                // 使用自定义的
+                jsonMessageConverter.setObjectMapper(objectMapper);
+            }
+        }
     }
 
 }

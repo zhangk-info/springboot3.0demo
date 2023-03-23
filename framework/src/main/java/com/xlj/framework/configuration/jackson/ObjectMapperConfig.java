@@ -44,8 +44,6 @@ public class ObjectMapperConfig {
      * 默认时间格式
      */
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-    @Autowired
-    private RequestMappingHandlerAdapter handlerAdapter;
 
     @Bean
     public ObjectMapper getSelfObjectMapper() {
@@ -76,16 +74,4 @@ public class ObjectMapperConfig {
         return objectMapper;
     }
 
-    @EventListener
-    public void handleContextRefresh(ContextRefreshedEvent event) {
-        handlerAdapter
-                .getMessageConverters()
-                .forEach(c -> {
-                    if (c instanceof MappingJackson2HttpMessageConverter jsonMessageConverter) {
-                        // 使用自定义的
-                        ObjectMapper objectMapper = getSelfObjectMapper();
-                        jsonMessageConverter.setObjectMapper(objectMapper);
-                    }
-                });
-    }
 }
