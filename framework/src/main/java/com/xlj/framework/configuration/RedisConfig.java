@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xlj.framework.configuration.jackson.ObjectMapperConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -22,19 +23,18 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @EnableCaching
 public class RedisConfig {
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate();
         template.setConnectionFactory(factory);
 
-        ObjectMapper redisObjectMapper = new ObjectMapper();
-        BeanUtil.copyProperties(objectMapper, redisObjectMapper);
+        // 这里里面的_registeredModuleTypes是protected,所以不能被复制，然后这里存redis序列化和反序列化的时候要保存类信息，不能使用全局的objectMapper
+        ObjectMapper redisObjectMapper = new ObjectMapperConfig().objectMapper();
         // Java Class 以指定的格式序列化到Json字符串中，反序列化时才能正常case成想要的类
         redisObjectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         redisObjectMapper.activateDefaultTyping(redisObjectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
+
         // 设置一个JsonRedisSerializer
         Jackson2JsonRedisSerializer jacksonSeial = new Jackson2JsonRedisSerializer(redisObjectMapper, Object.class);
 
