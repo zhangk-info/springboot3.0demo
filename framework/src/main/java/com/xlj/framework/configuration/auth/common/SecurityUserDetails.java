@@ -1,5 +1,7 @@
 package com.xlj.framework.configuration.auth.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.xlj.framework.configuration.auth.converter.CollectionToGrantAuthoritiesConverter;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,7 @@ public class SecurityUserDetails implements UserDetails {
     /**
      * 认证信息
      */
+    @JsonDeserialize(converter = CollectionToGrantAuthoritiesConverter.class)
     private Collection<? extends GrantedAuthority> authorities;
     private boolean accountNonLocked;
     private boolean accountNonExpired;

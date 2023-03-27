@@ -2,6 +2,7 @@ package com.xlj.framework.filter.context;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xlj.common.constants.CacheConstants;
 import com.xlj.common.context.CurrentUser;
 import com.xlj.common.context.UserContext;
@@ -9,9 +10,9 @@ import com.xlj.common.context.UserType;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.properties.UriProperties;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
 import com.xlj.system.configuration.RedisService;
-import com.xlj.system.domain.model.LoginUser;
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -62,6 +63,8 @@ public class CurrentUserFilter extends OncePerRequestFilter {
     private JwtDecoder jwtDecoder;
     @Autowired
     private RedisService redisService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
@@ -102,9 +105,9 @@ public class CurrentUserFilter extends OncePerRequestFilter {
                 UserDetails userDetails;
                 // 如果包含user字段，那么是LoginUser
                 if (claims.containsKey("user")) {
-                    userDetails = JSONUtil.toBean(JSONUtil.toJsonStr(claims), LoginUser.class, true);
+                    userDetails = objectMapper.readValue(objectMapper.writeValueAsString(claims), LoginUser.class);
                 } else {
-                    userDetails = JSONUtil.toBean(JSONUtil.toJsonStr(claims), SecurityUserDetails.class, true);
+                    userDetails = objectMapper.readValue(objectMapper.writeValueAsString(claims), SecurityUserDetails.class);
                 }
                 // 获取用户共有且需要的信息转换成CurrentUser并放入ThreadLocal
                 CurrentUser currentUser = new CurrentUser();

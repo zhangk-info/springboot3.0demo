@@ -203,6 +203,7 @@ public class AuthorizationServerConfiguration {
      *
      * @return JwtAuthenticationConverter
      */
+    @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         CustomJwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new CustomJwtGrantedAuthoritiesConverter();
         // 默认前缀是SCOPE_ 这里去掉了

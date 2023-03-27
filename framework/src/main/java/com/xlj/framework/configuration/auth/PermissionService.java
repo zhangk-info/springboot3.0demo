@@ -2,7 +2,7 @@ package com.xlj.framework.configuration.auth;
 
 import com.xlj.common.context.PermissionContextHolder;
 import com.xlj.system.domain.entity.SysRole;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

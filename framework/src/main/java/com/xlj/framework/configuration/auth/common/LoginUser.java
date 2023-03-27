@@ -1,4 +1,4 @@
-package com.xlj.system.domain.model;
+package com.xlj.framework.configuration.auth.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.xlj.system.domain.entity.SysUser;

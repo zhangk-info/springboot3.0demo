@@ -2,7 +2,7 @@ package com.xlj.framework.configuration.auth;
 
 import com.xlj.common.exception.ServiceException;
 import com.xlj.common.constants.HttpStatus;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

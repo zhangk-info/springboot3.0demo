@@ -6,7 +6,7 @@ import com.xlj.common.entity.DataResp;
 import com.xlj.common.enums.BusinessType;
 import com.xlj.system.constant.UserConstants;
 import com.xlj.system.domain.entity.SysUser;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import com.xlj.framework.configuration.auth.SecurityUtils;
 import com.xlj.system.service.ISysUserService;
 import org.apache.commons.lang3.StringUtils;

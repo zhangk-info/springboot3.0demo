@@ -3,7 +3,7 @@ package com.xlj.framework.configuration.auth.customizer.jwt.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.xlj.framework.configuration.auth.common.SecurityUserDetails;
 import com.xlj.framework.configuration.auth.customizer.jwt.JwtCustomizerHandler;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +14,6 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;

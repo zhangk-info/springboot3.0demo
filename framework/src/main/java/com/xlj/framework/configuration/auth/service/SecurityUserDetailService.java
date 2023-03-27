@@ -14,7 +14,7 @@ import com.xlj.framework.manager.AsyncManager;
 import com.xlj.framework.manager.factory.AsyncFactory;
 import com.xlj.system.configuration.RedisService;
 import com.xlj.system.domain.entity.SysUser;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import com.xlj.system.enums.UserStatus;
 import com.xlj.system.service.ISysUserService;
 import com.xlj.system.service.SysPermissionService;

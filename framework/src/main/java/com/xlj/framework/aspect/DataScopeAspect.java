@@ -6,7 +6,7 @@ import com.xlj.common.entity.BaseEntity;
 import com.xlj.common.entity.BaseQuery;
 import com.xlj.system.domain.entity.SysRole;
 import com.xlj.system.domain.entity.SysUser;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import com.xlj.framework.configuration.auth.SecurityUtils;
 import com.xlj.common.context.PermissionContextHolder;
 import org.apache.commons.lang3.StringUtils;

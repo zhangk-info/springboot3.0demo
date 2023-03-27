@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xlj.common.entity.DataResp;
 import com.xlj.common.constants.HttpStatus;
-import com.xlj.system.domain.model.LoginUser;
+import com.xlj.framework.configuration.auth.common.LoginUser;
 import com.xlj.system.page.PageDomain;
 import com.xlj.system.page.TableDataInfo;
 import com.xlj.system.page.TableSupport;
