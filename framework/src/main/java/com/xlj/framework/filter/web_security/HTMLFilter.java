@@ -1,6 +1,10 @@
 package com.xlj.framework.filter.web_security;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Logger;
@@ -153,7 +157,7 @@ public final class HTMLFilter {
         vNeedClosingTags = new String[]{"a", "b", "strong", "i", "em"};
         vDisallowed = new String[]{};
         // no ftp.
-        vAllowedProtocols = new String[]{"http", "mailto", "https"};
+        vAllowedProtocols = new String[]{"http", "mailto", "https", "data"};
         vProtocolAtts = new String[]{"src", "href"};
         vRemoveBlanks = new String[]{"a", "b", "strong", "i", "em"};
         vAllowedEntities = new String[]{"amp", "gt", "lt", "quot"};
