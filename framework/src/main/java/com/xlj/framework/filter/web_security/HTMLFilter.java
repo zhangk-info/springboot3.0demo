@@ -424,7 +424,7 @@ public final class HTMLFilter {
                         if (inArray(paramName, vProtocolAtts)) {
                             paramValue = processParamProtocol(paramValue);
                         }
-                        params += " " + paramName + "=\"" + paramValue + "\"";
+                        params += " " + paramName + "=\\\"" + paramValue + "\\\"";
                     }
                 }
 
