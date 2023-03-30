@@ -148,18 +148,31 @@ public final class HTMLFilter {
         vAllowed.put("img", imgAtts);
 
         final ArrayList<String> noAtts = new ArrayList<>();
+        noAtts.add("class");
         vAllowed.put("b", noAtts);
         vAllowed.put("strong", noAtts);
         vAllowed.put("i", noAtts);
         vAllowed.put("em", noAtts);
+        vAllowed.put("p", noAtts);
+        vAllowed.put("u", noAtts);
+        vAllowed.put("s", noAtts);
+        vAllowed.put("blockquote", noAtts);
+        vAllowed.put("ol", noAtts);
+        vAllowed.put("ul", noAtts);
+        vAllowed.put("li", noAtts);
+        vAllowed.put("br", noAtts);
+        noAtts.add("spellcheck");
+        vAllowed.put("pre", noAtts);
+        noAtts.add("style");
+        vAllowed.put("span", noAtts);
 
-        vSelfClosingTags = new String[]{"img"};
-        vNeedClosingTags = new String[]{"a", "b", "strong", "i", "em"};
+        vSelfClosingTags = new String[]{"img", "br"};
+        vNeedClosingTags = new String[]{"p", "u", "s", "blockquote", "ol", "ul", "li", "a", "b", "strong", "i", "em"};
         vDisallowed = new String[]{};
         // no ftp.
-        vAllowedProtocols = new String[]{"http", "mailto", "https", "data"};
+        vAllowedProtocols = new String[]{/*"http", "mailto", "https",*/ "data"};
         vProtocolAtts = new String[]{"src", "href"};
-        vRemoveBlanks = new String[]{"a", "b", "strong", "i", "em"};
+        vRemoveBlanks = new String[]{"p", "u", "s", "blockquote", "pre", "ol", "ul", "li", "span", "br", "a", "b", "strong", "i", "em"};
         vAllowedEntities = new String[]{"amp", "gt", "lt", "quot"};
         stripComment = true;
         encodeQuotes = true;
@@ -209,8 +222,8 @@ public final class HTMLFilter {
     /**
      * my versions of some PHP library functions
      *
-     * @param decimal
-     * @return
+     * @param decimal decimal
+     * @return String
      */
     public static String chr(final int decimal) {
         return String.valueOf((char) decimal);
@@ -391,13 +404,13 @@ public final class HTMLFilter {
         m = P_START_TAG.matcher(s);
         if (m.find()) {
             final String name = m.group(1).toLowerCase();
-            final String body = m.group(2);
+            String body = m.group(2);
             String ending = m.group(3);
 
             //debug( "in a starting tag, name='" + name + "'; body='" + body + "'; ending='" + ending + "'" );
             if (allowed(name)) {
                 String params = "";
-
+                body = body.replaceAll("\\\\", "");
                 final Matcher m2 = P_QUOTED_ATTRIBUTES.matcher(body);
                 final Matcher m3 = P_UNQUOTED_ATTRIBUTES.matcher(body);
                 final List<String> paramNames = new ArrayList<>();
