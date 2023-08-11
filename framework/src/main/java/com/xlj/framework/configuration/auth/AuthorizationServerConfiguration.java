@@ -21,7 +21,6 @@ import com.xlj.framework.configuration.auth.handler.MyLogoutHandler;
 import com.xlj.framework.configuration.auth.jose.Jwks;
 import com.xlj.framework.configuration.password.SM4PasswordEncoder;
 import com.xlj.framework.filter.context.CurrentUserFilter;
-import com.xlj.framework.filter.web_security.BeforeTokenAuthorizationFilter;
 import com.xlj.framework.filter.web_security.XssFilter;
 import com.xlj.system.configuration.RedisService;
 import jakarta.annotation.Resource;
@@ -112,36 +111,6 @@ public class AuthorizationServerConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new SM4PasswordEncoder(sm4Utils);
-    }
-
-    /**
-     * 配置ResourceServer以及退出登录
-     *
-     * @param http
-     * @return
-     * @throws Exception
-     */
-    @Bean
-    public SecurityFilterChain securityFilterChainForResourceServer(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/**")
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/oauth2/token").permitAll()
-                        .requestMatchers(urlProperties.getIgnores().toArray(new String[0])).permitAll()
-                        .requestMatchers(urlProperties.getPublicIgnores().toArray(new String[0])).permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(entryPointCustomizer)
-                );
-        // spring security 5.x默认的bearer token解析器没有启用从请求参数中获取token 配置这个以启用filter
-        http.oauth2ResourceServer().jwt(jwt -> jwt.decoder(jwtDecoder(jwkSource())).jwtAuthenticationConverter(jwtAuthenticationConverter())).bearerTokenResolver(new DefaultBearerTokenResolver());
-        http.addFilterBefore(new BeforeTokenAuthorizationFilter(redisService, uriProperties), BearerTokenAuthenticationFilter.class);
-
-        return http.build();
     }
 
     /**
