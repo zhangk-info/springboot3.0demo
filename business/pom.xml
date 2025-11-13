@@ -181,6 +181,7 @@
                     <to>
                         <!-- 这里一定要用repository中配置的http端口，否则会使用v2 -->
                         <image>ip:6000/demo:${project.version}</image>
+                        <!-- 账号密码可以运行时作为参数传入 -->
                         <auth>
                             <username>xxx</username>
                             <password>xxx</password>
@@ -206,6 +207,11 @@
                     <!--  jib默认只接收https请求，如果要使用http请求的话需要将此参数设置为true -->
                     <allowInsecureRegistries>true</allowInsecureRegistries>
                     <!-- 运行方式： * 跳过测试并http方式跳过证书认证 mvn compile jib:build -D maven.test.skip=true -D sendCredentialsOverHttp=true -->
+
+                    <!-- 运行方式：
+                        * 跳过测试并http方式跳过证书认证
+                        mvn compile jib:build -D maven.test.skip=true -D sendCredentialsOverHttp=true -D jib.to.auth.username=developer -D jib.to.auth.password=dev2021@FT
+                     -->
                 </configuration>
 <!--                <executions>-->
 <!--                    <execution>-->

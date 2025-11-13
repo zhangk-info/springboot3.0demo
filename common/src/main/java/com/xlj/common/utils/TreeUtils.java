@@ -501,6 +501,9 @@ public class TreeUtils {
      * @param <T>
      */
     public static <T extends TreeNode> List<T> treeToList(List<T> treeNodeList, Class bean) {
+        if (CollectionUtil.isEmpty(treeNodeList)) {
+            return new ArrayList<>();
+        }
         if (Objects.isNull(bean)) {
             try {
                 T temp = treeNodeList.get(0);
